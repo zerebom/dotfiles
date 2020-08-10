@@ -2,7 +2,11 @@
 # 初期化
 source ~/.zplug/init.zsh
 
-ZSH_THEME="candy"
+export PATH=$HOME/bin:$PATH
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$PATH
+
+# ZSH_THEME="candy"
 
 # 自身をプラグインとして管理する
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
@@ -157,64 +161,79 @@ setopt extended_glob
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
 
-function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
-function is_osx() { [[ $OSTYPE == darwin* ]]; }
-function is_screen_running() { [ ! -z "$STY" ]; }
-function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
-function is_screen_or_tmux_running() { is_screen_running || is_tmux_runnning; }
-function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
-function is_ssh_running() { [ ! -z "$SSH_CONECTION" ]; }
+# function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
+# function is_osx() { [[ $OSTYPE == darwin* ]]; }
+# function is_screen_running() { [ ! -z "$STY" ]; }
+# function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
+# function is_screen_or_tmux_running() { is_screen_running || is_tmux_runnning; }
+# function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
+# function is_ssh_running() { [ ! -z "$SSH_CONECTION" ]; }
 
-function tmux_automatically_attach_session()
-{
-    if is_screen_or_tmux_running; then
-        ! is_exists 'tmux' && return 1
+# function tmux_automatically_attach_session()
+# {
+#     if is_screen_or_tmux_running; then
+#         ! is_exists 'tmux' && return 1
 
-        if is_tmux_runnning; then
-            echo "${fg_bold[red]} _____ __  __ _   ___  __ ${reset_color}"
-            echo "${fg_bold[red]}|_   _|  \/  | | | \ \/ / ${reset_color}"
-            echo "${fg_bold[red]}  | | | |\/| | | | |\  /  ${reset_color}"
-            echo "${fg_bold[red]}  | | | |  | | |_| |/  \  ${reset_color}"
-            echo "${fg_bold[red]}  |_| |_|  |_|\___//_/\_\ ${reset_color}"
-        elif is_screen_running; then
-            echo "This is on screen."
-        fi
-    else
-        if shell_has_started_interactively && ! is_ssh_running; then
-            if ! is_exists 'tmux'; then
-                echo 'Error: tmux command not found' 2>&1
-                return 1
-            fi
+#         if is_tmux_runnning; then
+#             echo "${fg_bold[red]} _____ __  __ _   ___  __ ${reset_color}"
+#             echo "${fg_bold[red]}|_   _|  \/  | | | \ \/ / ${reset_color}"
+#             echo "${fg_bold[red]}  | | | |\/| | | | |\  /  ${reset_color}"
+#             echo "${fg_bold[red]}  | | | |  | | |_| |/  \  ${reset_color}"
+#             echo "${fg_bold[red]}  |_| |_|  |_|\___//_/\_\ ${reset_color}"
+#         elif is_screen_running; then
+#             echo "This is on screen."
+#         fi
+#     else
+#         if shell_has_started_interactively && ! is_ssh_running; then
+#             if ! is_exists 'tmux'; then
+#                 echo 'Error: tmux command not found' 2>&1
+#                 return 1
+#             fi
 
-            if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
-                # detached session exists
-                tmux list-sessions
-                echo -n "Tmux: attach? (y/N/num) "
-                read
-                if [[ "$REPLY" =~ ^[Yy]$ ]] || [[ "$REPLY" == '' ]]; then
-                    tmux attach-session
-                    if [ $? -eq 0 ]; then
-                        echo "$(tmux -V) attached session"
-                        return 0
-                    fi
-                elif [[ "$REPLY" =~ ^[0-9]+$ ]]; then
-                    tmux attach -t "$REPLY"
-                    if [ $? -eq 0 ]; then
-                        echo "$(tmux -V) attached session"
-                        return 0
-                    fi
-                fi
-            fi
+#             if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
+#                 # detached session exists
+#                 tmux list-sessions
+#                 echo -n "Tmux: attach? (y/N/num) "
+#                 read
+#                 if [[ "$REPLY" =~ ^[Yy]$ ]] || [[ "$REPLY" == '' ]]; then
+#                     tmux attach-session
+#                     if [ $? -eq 0 ]; then
+#                         echo "$(tmux -V) attached session"
+#                         return 0
+#                     fi
+#                 elif [[ "$REPLY" =~ ^[0-9]+$ ]]; then
+#                     tmux attach -t "$REPLY"
+#                     if [ $? -eq 0 ]; then
+#                         echo "$(tmux -V) attached session"
+#                         return 0
+#                     fi
+#                 fi
+#             fi
 
-            if is_osx && is_exists 'reattach-to-user-namespace'; then
-                # on OS X force tmux's default command
-                # to spawn a shell in the user's namespace
-                tmux_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
-                tmux -f <(echo "$tmux_config") new-session && echo "$(tmux -V) created new session supported OS X"
-            else
-                tmux new-session && echo "tmux created new session"
-            fi
-        fi
-    fi
-}
-tmux_automatically_attach_session
+#             if is_osx && is_exists 'reattach-to-user-namespace'; then
+#                 # on OS X force tmux's default command
+#                 # to spawn a shell in the user's namespace
+#                 tmux_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
+#                 tmux -f <(echo "$tmux_config") new-session && echo "$(tmux -V) created new session supported OS X"
+#             else
+#                 tmux new-session && echo "tmux created new session"
+#             fi
+#         fi
+#     fi
+# }
+# tmux_automatically_attach_session
+
+
+
+PATH=/Users/wantedly206/.wantedly/bin:/Users/wantedly206/.wantedly/bin:/Users/wantedly206/go/bin:/Users/wantedly206/bin:/Users/wantedly206/.zplug/repos/zplug/zplug/bin:/Users/wantedly206/.zplug/bin:/Users/wantedly206/go/bin:/Users/wantedly206/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin
+
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/wantedly206/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/wantedly206/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/wantedly206/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/wantedly206/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+export GOPRIVATE=github.com/wantedly
+export APP_ENV=test
+export APP_NAME=test
