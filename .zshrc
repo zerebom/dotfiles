@@ -1,6 +1,8 @@
 
 # 初期化
-source ~/.zplug/init.zsh
+export ZPLUG_HOME=/usr/local/opt/zplug
+source $ZPLUG_HOME/init.zsh
+# source ~/.zplug/init.zsh
 
 export PATH=$HOME/bin:$PATH
 export GOPATH=$HOME/go
