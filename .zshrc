@@ -1,5 +1,15 @@
+LC_CTYPE=en_US.UTF-8
+LC_ALL=en_US.UTF-8
 
 # 初期化
+fixZsh() {
+	for f in $(compaudit)
+	do
+		sudo chown -R $(whoami):root $f
+		sudo chmod -R 755 $f
+	done
+}
+
 export ZPLUG_HOME=/usr/local/opt/zplug
 source $ZPLUG_HOME/init.zsh
 # source ~/.zplug/init.zsh
