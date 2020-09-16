@@ -237,3 +237,15 @@ if [ -f '/Users/wantedly206/Downloads/google-cloud-sdk/completion.zsh.inc' ]; th
 export GOPRIVATE=github.com/wantedly
 export APP_ENV=test
 export APP_NAME=test
+
+export EDITOR=vim
+eval "$(direnv hook zsh)"
+
+
+
+
+
+
+
+
+eval "$(starship init zsh)"
