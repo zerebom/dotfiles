@@ -1,3 +1,15 @@
+
+"外部接続系
+"タイトルをバッファ名に変更しない
+set notitle
+set shortmess+=I
+
+"ターミナル接続を高速にする
+set ttyfast
+
+"ターミナルで256色表示を使う
+set t_Co=256
+
 " setting
 "文字コードをUFT-8に設定
 set fenc=utf-8
@@ -19,13 +31,13 @@ set number
 " 現在の行を強調表示
 set cursorline
 " 現在の行を強調表示（縦）
-set cursorcolumn
+"set cursorcolumn
 " 行末の1文字先までカーソルを移動できるように
 set virtualedit=onemore
 " インデントはスマートインデント
 set smartindent
 " ビープ音を可視化
-set visualbell
+"set visualbell
 " 括弧入力時の対応する括弧を表示
 set showmatch
 " ステータスラインを常に表示
@@ -49,6 +61,14 @@ set tabstop=2
 " 行頭でのTab文字の表示幅
 set shiftwidth=2
 
+" 予測変換系
+" 補完ウィンドウを選択状態にする・挿入はしない
+set completeopt=menuone,noinsert
+" 補完表示時のEnterで改行をしない
+inoremap <expr><CR>  pumvisible() ? "<C-y>" : "<CR>"
+"ctrl+nで下/ctrl+pで上
+inoremap <expr><C-n> pumvisible() ? "<Down>" : "<C-n>"
+inoremap <expr><C-p> pumvisible() ? "<Up>" : "<C-p>"
 
 " 検索系
 " 検索文字列が小文字の場合は大文字小文字を区別なく検索する
