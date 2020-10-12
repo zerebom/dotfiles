@@ -1,3 +1,10 @@
+"autocorrect
+set completeopt=menuone
+for k in split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_",'\zs')
+  exec "imap " . k . " " . k . "<C-N><C-P>"
+endfor
+
+imap <expr> <TAB> pumvisible() ? "\<Down>" : "\<Tab>"
 
 "外部接続系
 "タイトルをバッファ名に変更しない

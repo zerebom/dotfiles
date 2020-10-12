@@ -1,9 +1,13 @@
-# Don't print a new line at the start of the prompt
+#Don't print a new line at the start of the prompt
 add_newline = false
-
 # Replace the "❯" symbol in the prompt with "➜"
 [character]      # The name of the module we are configuring is "character"
-
 # Disable the package module, hiding it from the prompt completely
 [package]
 disabled = true
+[git_branch]
+#style = "bold blue"
+truncation_length = 30
+truncation_symbol = "..."
+[git_status]
+#style = "bold red"
