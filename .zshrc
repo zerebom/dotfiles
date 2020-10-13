@@ -1,14 +1,18 @@
 
 # 初期化
 export ZPLUG_HOME=/usr/local/opt/zplug
-source $ZPLUG_HOME/init.zsh
-# source ~/.zplug/init.zsh
+#source $ZPLUG_HOME/init.zsh
+source ~/.zplug/init.zsh
 
 export PATH=$HOME/bin:$PATH
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH
+export PATH=$HOME/.poetry/bin:$PATH
+export PATH=$HOME/.pyenv/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
 
-# ZSH_THEME="candy"
+
+#ZSH_THEME="candy"
 
 # 自身をプラグインとして管理する
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
@@ -227,8 +231,7 @@ WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
 
 
-PATH=/Users/wantedly206/.wantedly/bin:/Users/wantedly206/.wantedly/bin:/Users/wantedly206/go/bin:/Users/wantedly206/bin:/Users/wantedly206/.zplug/repos/zplug/zplug/bin:/Users/wantedly206/.zplug/bin:/Users/wantedly206/go/bin:/Users/wantedly206/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin
-
+#PATH=/Users/wantedly206/.wantedly/bin:/Users/wantedly206/.wantedly/bin:/Users/wantedly206/go/bin:/Users/wantedly206/bin:/Users/wantedly206/.zplug/repos/zplug/zplug/bin:/Users/wantedly206/.zplug/bin:/Users/wantedly206/go/bin:/Users/wantedly206/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin 
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/wantedly206/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/wantedly206/Downloads/google-cloud-sdk/path.zsh.inc'; fi
@@ -241,14 +244,10 @@ export APP_ENV=test
 export APP_NAME=test
 
 export EDITOR=vim
-eval "$(direnv hook zsh)"
+#eval "$(direnv hook zsh)"
 
-
-
-
-
-
-
+LC_CTYPE=en_US.UTF-8
+LC_ALL=en_US.UTF-8
 
 eval "$(starship init zsh)"
 export STARSHIP_CONFIG=~/.starship.toml
