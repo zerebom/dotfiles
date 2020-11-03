@@ -1,7 +1,7 @@
 
 # 初期化
 export ZPLUG_HOME=/usr/local/opt/zplug
-#source $ZPLUG_HOME/init.zsh
+source $ZPLUG_HOME/init.zsh
 source ~/.zplug/init.zsh
 
 export PATH=$HOME/bin:$PATH
@@ -10,9 +10,14 @@ export PATH=$GOPATH/bin:$PATH
 export PATH=$HOME/.poetry/bin:$PATH
 export PATH=$HOME/.pyenv/bin:$PATH
 export PATH=$HOME/.local/bin:$PATH
+export PATH=/usr/local/bin:$PATH
 
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+eval "$(direnv hook zsh)"
 
 #ZSH_THEME="candy"
+#
 
 # 自身をプラグインとして管理する
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
