@@ -1,6 +1,8 @@
-
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 # 初期化
-export ZPLUG_HOME=/usr/local/opt/zplug
+export ZPLUG_HOME=/root/.zplug
 source $ZPLUG_HOME/init.zsh
 #source ~/.zplug/init.zsh
 
