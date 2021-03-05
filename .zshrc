@@ -1,6 +1,7 @@
 
 # 初期化
-export ZPLUG_HOME=/usr/local/opt/zplug
+#export ZPLUG_HOME=/usr/local/opt/zplug
+export ZPLUG_HOME=/root/.zplug
 source $ZPLUG_HOME/init.zsh
 #source ~/.zplug/init.zsh
 
