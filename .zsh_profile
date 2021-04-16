@@ -1,0 +1,8 @@
+export PYTHOHPATH=/usr/local/lib/python3.8/site-packages:$PYTHOHPATH
+export PATH=$HOME/bin:$PATH
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$PATH
+export PATH=$HOME/.poetry/bin:$PATH
+export PATH=$HOME/.pyenv/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
+export PATH=/usr/local/bin:$PATH
