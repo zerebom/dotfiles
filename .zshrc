@@ -1,20 +1,22 @@
-#export PYTHONPATH=/usr/local/lib/python3.8/site-packages:$PYTHONPATH
-export PATH=$HOME/bin:$PATH
-export GOPATH=$HOME/go
+export PATH=$HOME/.wantedly/bin:$PATH
 export PATH=$GOPATH/bin:$PATH
+export PATH="$HOME/.poetry/bin:$PATH"
 #export PATH=$HOME/.poetry/bin:$PATH
 #export PATH=$HOME/.pyenv/bin:$PATH
 #export PATH=$HOME/.local/bin:$PATH
 #export PATH=/usr/local/bin:$PATH
+#export GOPATH=$HOME/go
 
-# 初期化
+export GOPRIVATE=github.com/wantedly
+export EDITOR=vim
+export REFLECTION_SERVER=apis-reflection-server.apis-reflection-server:80
+
 #export ZPLUG_HOME=/root/.zplug
 #source $ZPLUG_HOME/init.zsh
 source ~/.zplug/init.zsh
 
-
-#eval "$(pyenv init -)"
-#eval "$(pyenv virtualenv-init -)"
+function history-all { history -E 1}
+eval "$(pyenv init -)"
 eval "$(direnv hook zsh)"
 
 
@@ -101,6 +103,9 @@ alias gsp='git stash pop'
 autoload -Uz colors
 colors
 
+#glob でno matchだった場合の警告を消す
+setopt nonomatch
+
 # 日本語ファイル名を表示可能にする
 setopt print_eight_bit
 
@@ -170,84 +175,12 @@ setopt extended_glob
 # ※ たとえば Ctrl-W でカーソル前の1単語を削除したとき / までで削除が止まる
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
-
-# function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
-# function is_osx() { [[ $OSTYPE == darwin* ]]; }
-# function is_screen_running() { [ ! -z "$STY" ]; }
-# function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
-# function is_screen_or_tmux_running() { is_screen_running || is_tmux_runnning; }
-# function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
-# function is_ssh_running() { [ ! -z "$SSH_CONECTION" ]; }
-
-# function tmux_automatically_attach_session()
-# {
-#     if is_screen_or_tmux_running; then
-#         ! is_exists 'tmux' && return 1
-
-#         if is_tmux_runnning; then
-#             echo "${fg_bold[red]} _____ __  __ _   ___  __ ${reset_color}"
-#             echo "${fg_bold[red]}|_   _|  \/  | | | \ \/ / ${reset_color}"
-#             echo "${fg_bold[red]}  | | | |\/| | | | |\  /  ${reset_color}"
-#             echo "${fg_bold[red]}  | | | |  | | |_| |/  \  ${reset_color}"
-#             echo "${fg_bold[red]}  |_| |_|  |_|\___//_/\_\ ${reset_color}"
-#         elif is_screen_running; then
-#             echo "This is on screen."
-#         fi
-#     else
-#         if shell_has_started_interactively && ! is_ssh_running; then
-#             if ! is_exists 'tmux'; then
-#                 echo 'Error: tmux command not found' 2>&1
-#                 return 1
-#             fi
-
-#             if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
-#                 # detached session exists
-#                 tmux list-sessions
-#                 echo -n "Tmux: attach? (y/N/num) "
-#                 read
-#                 if [[ "$REPLY" =~ ^[Yy]$ ]] || [[ "$REPLY" == '' ]]; then
-#                     tmux attach-session
-#                     if [ $? -eq 0 ]; then
-#                         echo "$(tmux -V) attached session"
-#                         return 0
-#                     fi
-#                 elif [[ "$REPLY" =~ ^[0-9]+$ ]]; then
-#                     tmux attach -t "$REPLY"
-#                     if [ $? -eq 0 ]; then
-#                         echo "$(tmux -V) attached session"
-#                         return 0
-#                     fi
-#                 fi
-#             fi
-
-#             if is_osx && is_exists 'reattach-to-user-namespace'; then
-#                 # on OS X force tmux's default command
-#                 # to spawn a shell in the user's namespace
-#                 tmux_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
-#                 tmux -f <(echo "$tmux_config") new-session && echo "$(tmux -V) created new session supported OS X"
-#             else
-#                 tmux new-session && echo "tmux created new session"
-#             fi
-#         fi
-#     fi
-# }
-# tmux_automatically_attach_session
-
-
-
-
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/wantedly206/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/wantedly206/Downloads/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/wantedly206/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/wantedly206/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
-export GOPRIVATE=github.com/wantedly
-export APP_ENV=test
-export APP_NAME=test
-
-export EDITOR=vim
-#eval "$(direnv hook zsh)"
 
 LC_CTYPE=en_US.UTF-8
 LC_ALL=en_US.UTF-8
@@ -255,4 +188,15 @@ LC_ALL=en_US.UTF-8
 eval "$(starship init zsh)"
 export STARSHIP_CONFIG=~/.starship.toml
 
-export PATH="$HOME/.poetry/bin:$PATH"
+
+function peco-history-selection() {
+    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+        CURSOR=$#BUFFER    
+        zle reset-prompt
+}
+
+zle -N peco-history-selection 
+bindkey '^R' peco-history-selection
+
+# added by travis gem
+[ ! -s /Users/wantedly206/.travis/travis.sh ] || source /Users/wantedly206/.travis/travis.sh
