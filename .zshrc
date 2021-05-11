@@ -1,6 +1,7 @@
 export PATH=$HOME/.wantedly/bin:$PATH
 export PATH=$GOPATH/bin:$PATH
 export PATH="$HOME/.poetry/bin:$PATH"
+export PATH="/usr/local/bin/nvim:$PATH"
 #export PATH=$HOME/.poetry/bin:$PATH
 #export PATH=$HOME/.pyenv/bin:$PATH
 #export PATH=$HOME/.local/bin:$PATH
@@ -200,3 +201,14 @@ bindkey '^R' peco-history-selection
 
 # added by travis gem
 [ ! -s /Users/wantedly206/.travis/travis.sh ] || source /Users/wantedly206/.travis/travis.sh
+
+function ghq-fzf() {
+  local src=$(ghq list | fzf --preview "ls -laTp $(ghq root)/{} | tail -n+4 | awk '{print \$9\"/\"\$6\"/\"\$7 \" \" \$10}'")
+  if [ -n "$src" ]; then
+    BUFFER="cd $(ghq root)/$src"
+    zle accept-line
+  fi
+  zle -R -c
+}
+zle -N ghq-fzf
+bindkey '^]' ghq-fzf

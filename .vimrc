@@ -6,6 +6,8 @@ endfor
 
 imap <expr> <TAB> pumvisible() ? "\<Down>" : "\<Tab>"
 
+set clipboard=unnamed
+
 "外部接続系
 "タイトルをバッファ名に変更しない
 set notitle
@@ -94,3 +96,12 @@ nmap <Esc><Esc> :nohlsearch<CR><Esc>
 set autoindent
 filetype plugin indent on
 inoremap <silent> jj <ESC>
+
+
+
+call plug#begin('~/.config/nvim/plugged')
+Plug 'cocopon/iceberg.vim'
+Plug 'tpope/vim-sensible'
+call plug#end()
+
+colorscheme iceberg
