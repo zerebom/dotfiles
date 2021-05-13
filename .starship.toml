@@ -16,7 +16,7 @@ disabled = false
 
 [git_branch]
 #style = "bold blue"
-truncation_length = 30
+truncation_length = 50
 truncation_symbol = "..."
 
 [git_status]
