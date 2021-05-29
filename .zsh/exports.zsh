@@ -2,6 +2,7 @@ export PATH=$HOME/.wantedly/bin:$PATH
 export PATH=$GOPATH/bin:$PATH
 export PATH="$HOME/.poetry/bin:$PATH"
 export PATH="/usr/local/bin/nvim:$PATH"
+export PATH="/usr/local/bin:$PATH"
 #export PATH=$HOME/.poetry/bin:$PATH
 #export PATH=$HOME/.pyenv/bin:$PATH
 #export PATH=$HOME/.local/bin:$PATH

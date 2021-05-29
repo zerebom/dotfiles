@@ -20,3 +20,8 @@ truncation_length = 50
 truncation_symbol = "..."
 
 [git_status]
+
+[custom.uname]
+command = "uname -m"
+format = "[$output]($style)"
+shell = ["zsh"]
