@@ -28,9 +28,9 @@ if [ -d "${HOME}/.rbenv" ]; then
 fi
 
 # pyenv
-if [ -d "${HOME}/.pyenv" ]; then
-  eval "$(pyenv init -)"
-fi
+#if [ -d "${HOME}/.pyenv" ]; then
+#  eval "$(pyenv init -)"
+#fi
 
 # nodenv
 #if [ -d "${HOME}/.nodenv" ]; then

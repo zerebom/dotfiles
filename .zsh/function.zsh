@@ -1,6 +1,17 @@
+
+function lint(){
+	black --exclude="injection\.py|stageouts\.py" $1 --diff --check&&
+	mypy $1&&
+	flake8 --exclude=injection.py,stageouts.py $1
+}
+
+pss () {
+    ps aux | grep -E "PID|$1" | grep -v grep
+}
+
 # serach prev command
 function peco-history-selection() {
-    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+    BUFFER=`history -n 1 | tail -r | awk '!a[$0]++' | fzf `
         CURSOR=$#BUFFER    
         zle reset-prompt
 }
@@ -45,6 +56,11 @@ fshow() {
 FZF-EOF"
 }
 
+zle -N fbrm
+bindkey '^B' fbrm
+
+zle -N fshow
+bindkey '^L' fshow
 
 zle -N peco-history-selection 
 bindkey '^R' peco-history-selection
