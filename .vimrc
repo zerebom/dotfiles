@@ -99,9 +99,3 @@ inoremap <silent> jj <ESC>
 
 
 
-call plug#begin('~/.config/nvim/plugged')
-Plug 'cocopon/iceberg.vim'
-Plug 'tpope/vim-sensible'
-call plug#end()
-
-colorscheme iceberg

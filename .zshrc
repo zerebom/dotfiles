@@ -2,7 +2,7 @@
 bindkey -d
 bindkey -e
 autoload -Uz add-zsh-hook # call hook functions
-source $HOME/.zsh/prompt.zsh
+#source $HOME/.zsh/prompt.zsh
 source $HOME/.zsh/function.zsh
 source $HOME/.zsh/fzf.zsh
 
@@ -16,7 +16,7 @@ REPORTTIME=3
 source ~/.zplug/init.zsh
 
 function history-all { history -E 1}
-eval "$(pyenv init -)"
+#eval "$(pyenv init -)"
 eval "$(direnv hook zsh)"
 
 ### history ###
@@ -145,3 +145,25 @@ LC_ALL=en_US.UTF-8
 # added by travis gem
 [ ! -s /Users/wantedly206/.travis/travis.sh ] || source /Users/wantedly206/.travis/travis.sh
 
+
+export PATH="$HOME/.poetry/bin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/kokoro/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/kokoro/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/Users/kokoro/miniforge3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/kokoro/miniforge3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
