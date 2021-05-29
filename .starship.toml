@@ -1,27 +1,74 @@
-#Don't print a new line at the start of the prompt
-add_newline = false
+###Don't print a new line at the start of the prompt
+#add_newline = false
+#
+## Replace the "❯" symbol in the prompt with "➜"
+#[character]      # The name of the module we are configuring is "character"
+##success_symbol = "[→](bold green) "
+##error_symbol = "[←](bold red) "
+##symbol = "➟"     # The "symbol" segment is being set to "➜"
+##error_symbol = "✗"
+##style_success = "bold #00A652"
+##style_failure = "bold #df382c"
+#
+## Disable the package module, hiding it from the prompt completely
+#[package]
+#disabled = false
+#
+#[git_branch]
+##style = "bold blue"
+#truncation_length = 50
+#truncation_symbol = "..."
+#
+#[git_status]
+#
+#[custom.uname]
+#command = "uname -m"
+#format = "[$output]($style)"
+#shell = ["zsh"]
 
-# Replace the "❯" symbol in the prompt with "➜"
-[character]      # The name of the module we are configuring is "character"
-#success_symbol = "[→](bold green) "
-#error_symbol = "[←](bold red) "
-#symbol = "➟"     # The "symbol" segment is being set to "➜"
-#error_symbol = "✗"
-#style_success = "bold #00A652"
-#style_failure = "bold #df382c"
-
-# Disable the package module, hiding it from the prompt completely
-[package]
-disabled = false
+format = """
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+${custom.kubefork}\
+$kubernetes\
+$line_break\
+$time\
+$username\
+$hostname\
+$shlvl\
+$status\
+$character
+"""
 
 [git_branch]
-#style = "bold blue"
-truncation_length = 50
-truncation_symbol = "..."
+format = "[$symbol$branch]($style) "
+symbol = " "
+style = "green"
 
-[git_status]
+[directory]
+truncation_length = 100
+truncate_to_repo = false
+style = "blue"
 
-[custom.uname]
-command = "uname -m"
-format = "[$output]($style)"
-shell = ["zsh"]
+[directory.substitutions]
+"~/workspace/src/" = ""
+
+[time]
+disabled = false
+format = "$time "
+time_format = "%F %TJST"
+utc_time_offset = "+9"
+
+[kubernetes]
+disabled = false
+style = "blue"
+format = "[$symbol$context( \\($namespace\\) )]($style)"
+
+[custom.kubefork]
+command = "echo  $KUBE_FORK_TARGET_ENV.$KUBE_FORK_TARGET_NAMESPACE"
+shell = ["/bin/bash"]
+when = """ test -n "$KUBE_FORK_TARGET_ENV" """
+format = "[$output]($style) "
+style = "yellow"
