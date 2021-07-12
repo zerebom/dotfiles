@@ -35,3 +35,7 @@ alias gsl='git stash list'
 alias gsu='git stash -u'
 alias gsp='git stash pop'
 
+alias dot='cd ~/.dotfiles'
+alias .zsh='cd ~/.dotfiles/.zsh'
+alias vidot='cd ~/.dotfiles|vim' 
+
