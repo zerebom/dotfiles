@@ -146,9 +146,15 @@ LC_ALL=en_US.UTF-8
 [ ! -s /Users/wantedly206/.travis/travis.sh ] || source /Users/wantedly206/.travis/travis.sh
 
 
-export PATH="$HOME/.poetry/bin:$PATH"
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
+#export PATH="$HOME/.poetry/bin:$PATH"
+#export PATH="/opt/homebrew/bin:$PATH"
+#export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
+
+# tmux
+#if [ $SHLVL = 1 ]; then
+#  tmux
+#fi
+
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
