@@ -1,7 +1,7 @@
 
 function lint(){
 	black --exclude="injection\.py|stageouts\.py" $1 --diff --check&&
-	mypy $1&&
+	mypy --exclude="injection\.py|stageouts\.py" $1&&
 	flake8 --exclude=injection.py,stageouts.py $1
 }
 
