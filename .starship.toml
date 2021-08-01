@@ -45,7 +45,7 @@ $character
 [git_branch]
 format = "[$symbol$branch]($style) "
 symbol = " "
-style = "green"
+style = "dimmed blue"
 
 [directory]
 truncation_length = 60
@@ -57,9 +57,10 @@ style = "blue"
 
 [time]
 disabled = false
-format = "$time "
-time_format = "%F %TJST"
+format = "[$time]($style)"
+time_format = "%D %R"
 utc_time_offset = "+9"
+style = "white"
 
 [kubernetes]
 disabled = false
@@ -71,4 +72,4 @@ command = "echo  $KUBE_FORK_TARGET_ENV.$KUBE_FORK_TARGET_NAMESPACE"
 shell = ["/bin/bash"]
 when = """ test -n "$KUBE_FORK_TARGET_ENV" """
 format = "[$output]($style) "
-style = "yellow"
+style = "blue"

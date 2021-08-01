@@ -35,7 +35,20 @@ alias gsl='git stash list'
 alias gsu='git stash -u'
 alias gsp='git stash pop'
 
+# docker
+alias d=‘docker’
+alias dc=‘docker-compose’
+alias dcnt=‘docker container’
+alias dcur=‘docker container ls -f status=running -l -q’
+alias dexec=‘docker container exec -it $(dcur)’
+alias dimg=‘docker image’
+alias drun=‘docker container run —rm -d’
+alias drunit=‘docker container run —rm -it’
+alias dstop=‘docker container stop $(dcur)’
+
 alias dot='cd ~/.dotfiles'
 alias .zsh='cd ~/.dotfiles/.zsh'
 alias vidot='cd ~/.dotfiles|vim' 
 
+alias -g @g="| ag"
+alias -g @l="| less"
