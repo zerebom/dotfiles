@@ -9,6 +9,8 @@ source $HOME/.zsh/fzf.zsh
 export STARSHIP_CONFIG=~/.starship.toml
 eval "$(starship init zsh)"
 
+eval "$(goenv init -)"
+
 REPORTTIME=3 
 
 #export ZPLUG_HOME=/root/.zplug
@@ -173,3 +175,7 @@ unset __conda_setup
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export GOENV_ROOT="$HOME/.goenv"
+export PATH="$GOENV_ROOT/bin:$PATH"
+export PATH="$HOME/go/1.16.0/bin:$PATH"
+
