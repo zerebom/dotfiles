@@ -22,10 +22,10 @@ fi
 source $HOME/.zsh/exports.zsh
 source $HOME/.zsh/aliases.zsh
 
-# rbenv
-if [ -d "${HOME}/.rbenv" ]; then
-  eval "$(rbenv init -)"
-fi
+# # rbenv
+# if [ -d "${HOME}/.rbenv" ]; then
+#   eval "$(rbenv init -)"
+# fi
 
 # pyenv
 #if [ -d "${HOME}/.pyenv" ]; then

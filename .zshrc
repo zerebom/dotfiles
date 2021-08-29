@@ -9,9 +9,8 @@ source $HOME/.zsh/fzf.zsh
 export STARSHIP_CONFIG=~/.starship.toml
 eval "$(starship init zsh)"
 
-eval "$(goenv init -)"
 
-REPORTTIME=3 
+REPORTTIME=3
 
 #export ZPLUG_HOME=/root/.zplug
 #source $ZPLUG_HOME/init.zsh
@@ -35,7 +34,7 @@ setopt hist_reduce_blanks # ヒストリに保存するときに余分なスペ�
 ### directory stack ###
 setopt pushd_ignore_dups # pushd したとき、ディレクトリがすでにスタックに含まれていればスタックに追加しない
 setopt auto_pushd # cd [TAB] で以前移動したディレクトリを表示
-DIRSTACKSIZE=100 
+DIRSTACKSIZE=100
 
 ### plugins ###
 zplug 'zplug/zplug', hook-build:'zplug --self-manage' # 自身をプラグインとして管理する
@@ -118,7 +117,7 @@ zstyle ':completion:*' recent-dirs-insert both
 # ※ ディレクトリスタック: 今までに行ったディレクトリのヒストリのこと
 setopt auto_pushd
 
-function chpwd() { ls } # cd後 自動ls 
+function chpwd() { ls } # cd後 自動ls
 
 # 拡張 glob を有効にする
 # 拡張 glob を有効にすると # ~ ^ もパターンとして扱われる
@@ -179,3 +178,5 @@ export GOENV_ROOT="$HOME/.goenv"
 export PATH="$GOENV_ROOT/bin:$PATH"
 export PATH="$HOME/go/1.16.0/bin:$PATH"
 
+
+eval "$(goenv init -)"
