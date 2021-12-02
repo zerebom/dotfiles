@@ -1,7 +1,7 @@
 
 function lint(){
 	black --exclude="injection\.py|stageouts\.py" $1 --diff --check&&
-	mypy $1&&
+	mypy --exclude="injection\.py|stageouts\.py" $1&&
 	flake8 --exclude=injection.py,stageouts.py $1
 }
 
@@ -56,6 +56,20 @@ fshow() {
 FZF-EOF"
 }
 
+# expand global aliases by space
+# http://blog.patshead.com/2012/11/automatically-expaning-zsh-global-aliases---simplified.html
+globalias() {
+  if [[ $LBUFFER =~ ' [A-Z0-9]+$' ]]; then
+    zle _expand_alias
+    # zle expand-word
+  fi
+  zle self-insert
+}
+
+zle -N globalias
+
+bindkey " " globalias
+
 zle -N fbrm
 bindkey '^B' fbrm
 
@@ -67,4 +81,6 @@ bindkey '^R' peco-history-selection
 
 zle -N ghq-fzf
 bindkey '^]' ghq-fzf
+
+bindkey '^x' anyframe-widget-cdr
 

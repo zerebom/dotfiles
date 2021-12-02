@@ -1,7 +1,12 @@
 # キーバインディングを emacs 風にする
-bindkey -d
+#bindkey -d
 bindkey -e
+bindkey -v
 autoload -Uz add-zsh-hook # call hook functions
+# cdr
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+
 #source $HOME/.zsh/prompt.zsh
 source $HOME/.zsh/function.zsh
 source $HOME/.zsh/fzf.zsh
@@ -9,7 +14,8 @@ source $HOME/.zsh/fzf.zsh
 export STARSHIP_CONFIG=~/.starship.toml
 eval "$(starship init zsh)"
 
-REPORTTIME=3 
+
+REPORTTIME=3
 
 #export ZPLUG_HOME=/root/.zplug
 #source $ZPLUG_HOME/init.zsh
@@ -18,6 +24,7 @@ source ~/.zplug/init.zsh
 function history-all { history -E 1}
 #eval "$(pyenv init -)"
 eval "$(direnv hook zsh)"
+
 
 ### history ###
 HISTFILE=~/.zsh_history
@@ -33,11 +40,10 @@ setopt hist_reduce_blanks # ヒストリに保存するときに余分なスペ�
 ### directory stack ###
 setopt pushd_ignore_dups # pushd したとき、ディレクトリがすでにスタックに含まれていればスタックに追加しない
 setopt auto_pushd # cd [TAB] で以前移動したディレクトリを表示
-DIRSTACKSIZE=100 
+DIRSTACKSIZE=100
 
 ### plugins ###
 zplug 'zplug/zplug', hook-build:'zplug --self-manage' # 自身をプラグインとして管理する
-#zplug "sindresorhus/pure" # プロンプト
 zplug "mafredri/zsh-async" # 非同期処理
 zplug "zsh-users/zsh-syntax-highlighting" # 構文ハイライト
 zplug "zsh-users/zsh-history-substring-search" # コマンド履歴
@@ -116,7 +122,7 @@ zstyle ':completion:*' recent-dirs-insert both
 # ※ ディレクトリスタック: 今までに行ったディレクトリのヒストリのこと
 setopt auto_pushd
 
-function chpwd() { ls } # cd後 自動ls 
+function chpwd() { ls } # cd後 自動ls
 
 # 拡張 glob を有効にする
 # 拡張 glob を有効にすると # ~ ^ もパターンとして扱われる
@@ -173,3 +179,46 @@ unset __conda_setup
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export GOENV_ROOT="$HOME/.goenv"
+export PATH="$GOENV_ROOT/bin:$PATH"
+export PATH="$HOME/go/1.16.0/bin:$PATH"
+
+
+eval "$(goenv init -)"
+
+#anyframe
+fpath=($HOME/.zsh/anyframe(N-/) $fpath)
+autoload -Uz anyframe-init
+anyframe-init
+zstyle ":anyframe:selector:" use fzf
+
+
+
+## コマンドラインをエディタで起動する
+#$autoload -Uz edit-command-line
+#zle -N edit-command-line
+bindkey '^y' edit-command-line
+
+# viminsとemacsの共存
+bindkey -M viins '\er' history-incremental-pattern-search-forward
+bindkey -M viins '^?'  backward-delete-char
+bindkey -M viins '^A'  beginning-of-line
+bindkey -M viins '^B'  backward-char
+bindkey -M viins '^D'  delete-char-or-list
+bindkey -M viins '^E'  end-of-line
+bindkey -M viins '^F'  forward-char
+bindkey -M viins '^G'  send-break
+bindkey -M viins '^H'  backward-delete-char
+bindkey -M viins '^K'  kill-line
+bindkey -M viins '^N'  down-line-or-history
+bindkey -M viins '^P'  up-line-or-history
+#bindkey -M viins '^R'  history-incremental-pattern-search-backward
+bindkey -M viins '^U'  backward-kill-line
+bindkey -M viins '^W'  backward-kill-word
+bindkey -M viins '^Y'  yank
+
+export PATH="$HOME/.nodenv/bin:$PATH"
+export PATH="$HOME/command/:$PATH"
+eval "$(nodenv init -)"
+#eval "$(rbenv init - zsh)"
+
