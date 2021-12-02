@@ -19,3 +19,5 @@ export GOPRIVATE=github.com/wantedly
 export EDITOR=vim
 export REFLECTION_SERVER=apis-reflection-server.apis-reflection-server:80
 
+export PATH="$HOME/.nodenv/bin:$PATH"
+eval "$(nodenv init -)"

@@ -82,3 +82,5 @@ bindkey '^R' peco-history-selection
 zle -N ghq-fzf
 bindkey '^]' ghq-fzf
 
+bindkey '^x' anyframe-widget-cdr
+

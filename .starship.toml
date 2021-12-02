@@ -3,12 +3,12 @@ add_newline = false
 #
 ## Replace the "❯" symbol in the prompt with "➜"
 #[character]      # The name of the module we are configuring is "character"
-##success_symbol = "[→](bold green) "
-##error_symbol = "[←](bold red) "
-##symbol = "➟"     # The "symbol" segment is being set to "➜"
-##error_symbol = "✗"
-##style_success = "bold #00A652"
-##style_failure = "bold #df382c"
+#success_symbol = "[❯](bold blue) "
+#error_symbol = "[❯](bold red) "
+#symbol = "➟"     # The "symbol" segment is being set to "➜"
+#error_symbol = "✗"
+#style_success = "bold #00A652"
+#style_failure = "bold #df382c"
 #
 ## Disable the package module, hiding it from the prompt completely
 #[package]
@@ -73,3 +73,7 @@ shell = ["/bin/bash"]
 when = """ test -n "$KUBE_FORK_TARGET_ENV" """
 format = "[$output]($style) "
 style = "blue"
+
+[character]      # The name of the module we are configuring is "character"
+success_symbol = "[❯](bold blue) "
+error_symbol = "[❯](bold red) "
