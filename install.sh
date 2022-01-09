@@ -1,4 +1,5 @@
 #!/bin/bash
+
 cd ~
 #cd ~
 if ! which zsh ; then
@@ -16,6 +17,6 @@ yes | ~/.fzf/install
 #sudo mkdir  /usr/share/fonts/truetype/cica
 #sudo cp *.ttf /usr/share/fonts/truetype/cica/
 #sudo fc-cache -vf
-cd dotfliles
+cd dotfiles
 make install
 zsh
