@@ -1,3 +1,13 @@
+"search by * at virtual mode"
+xnoremap * :<C-u>call <SID>VSetSearch()<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>call <SID>VSetSearch()<CR>?<C-R>=@/<CR><CR>
+function! s:VSetSearch()
+  let temp = @s
+  norm! gv"sy
+  let @/ = '\V' . substitute(escape(@s, '/\'), '\n', '\\n', 'g')
+  let @s = temp
+endfunction
+
 "autocorrect
 set completeopt=menuone
 for k in split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_",'\zs')
@@ -7,6 +17,9 @@ endfor
 imap <expr> <TAB> pumvisible() ? "\<Down>" : "\<Tab>"
 
 set clipboard=unnamed
+
+" リーダーキーの変更
+let mapleader = " "
 
 "外部接続系
 "タイトルをバッファ名に変更しない
@@ -120,4 +133,3 @@ function! ProfileCursorMove() abort
     call feedkeys('j')
   endfor
 endfunction
-

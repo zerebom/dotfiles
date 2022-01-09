@@ -14,6 +14,8 @@ source $HOME/.zsh/fzf.zsh
 export STARSHIP_CONFIG=~/.starship.toml
 eval "$(starship init zsh)"
 
+. $HOME/ghq/github.com/rupa/z/z.sh
+
 
 REPORTTIME=3
 
@@ -221,4 +223,3 @@ export PATH="$HOME/.nodenv/bin:$PATH"
 export PATH="$HOME/command/:$PATH"
 eval "$(nodenv init -)"
 #eval "$(rbenv init - zsh)"
-
