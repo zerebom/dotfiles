@@ -1,7 +1,7 @@
 #!/bin/bash
-
 cd ~
-if not which zsh ; then
+#cd ~
+if ! which zsh ; then
 	apt install zsh -y
 fi
 
@@ -16,5 +16,6 @@ yes | ~/.fzf/install
 #sudo mkdir  /usr/share/fonts/truetype/cica
 #sudo cp *.ttf /usr/share/fonts/truetype/cica/
 #sudo fc-cache -vf
+cd dotfliles
 make install
 zsh
