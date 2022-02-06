@@ -52,3 +52,4 @@ alias vidot='cd ~/.dotfiles|vim'
 
 alias -g @g="| ag"
 alias -g @l="| less"
+alias date='/usr/local/bin/gdate'
