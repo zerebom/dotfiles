@@ -128,7 +128,7 @@ zstyle ':completion:*' recent-dirs-insert both
 # ※ ディレクトリスタック: 今までに行ったディレクトリのヒストリのこと
 setopt auto_pushd
 
-function chpwd() { ls } # cd後 自動ls
+function chpwd() { ll } # cd後 自動ls
 
 # 拡張 glob を有効にする
 # 拡張 glob を有効にすると # ~ ^ もパターンとして扱われる
@@ -294,6 +294,9 @@ zinit load zdharma-continuum/history-search-multi-word
 zinit light zsh-users/zsh-autosuggestions
 zinit light zdharma-continuum/fast-syntax-highlighting
 
+#color theme
+zinit light simnalamburt/shellder
+
 # Snippet
-zinit snippet https://gist.githubusercontent.com/hightemp/5071909/raw/
+#zinit snippet https://gist.githubusercontent.com/hightemp/5071909/raw/
 ### End of Zinit's installer chunk

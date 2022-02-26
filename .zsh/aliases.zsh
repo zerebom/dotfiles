@@ -10,6 +10,9 @@ alias so='source'
 alias be='bundle exec'
 alias ber='bundle exec ruby'
 
+alias ll='exa -l -h --git --icons'
+alias lla='ll -a'
+
 # エイリアス: git 系
 alias g='git'
 alias gs='git status'
@@ -28,12 +31,16 @@ alias gmud='git merge upstream/develop'
 alias gmom='git merge origin/master'
 alias gcm='git commit -m'
 alias gcam='git commit -a -m'
-alias gpo='git push origin'
-alias gpom='git push origin master'
+alias gp='git push'
+alias gpo='git push -u origin HEAD'
+alias gpom='git push -u origin master'
 alias gst='git stash'
 alias gsl='git stash list'
 alias gsu='git stash -u'
 alias gsp='git stash pop'
+alias gpul='git pull'
+alias glom='git pull origin master'
+
 
 # docker
 alias d='docker'
