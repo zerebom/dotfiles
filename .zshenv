@@ -1,3 +1,6 @@
+#profiling
+#zmodload zsh/zprof && zprof
+
 #it can force /etc/z* files after /etc/zshenv to be skipped
 setopt no_global_rcs
 
