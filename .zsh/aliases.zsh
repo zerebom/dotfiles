@@ -3,14 +3,14 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias e="emacs"
 alias vim='nvim'
-alias v='nvim'
-alias vi='nvim'
+alias v='vim'
+alias vi='vim'
 alias mss='mysql.server start'
 alias so='source'
 alias be='bundle exec'
 alias ber='bundle exec ruby'
 
-alias ll='exa -l -h --git --icons'
+alias ll='exa -l -h --git'
 alias lla='ll -a'
 
 # エイリアス: git 系
