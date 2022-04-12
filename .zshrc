@@ -1,3 +1,14 @@
+# Fig pre block. Keep at the top of this file.
+export PATH="${PATH}:${HOME}/.local/bin"
+eval "$(fig init zsh pre)"
+
+#
+if [ "$(arch)" = "arm64" ]; then
+  eval $(/opt/homebrew/bin/brew shellenv);
+else
+  eval $(/usr/local/bin/brew shellenv);
+fi
+
 # キーバインディングを emacs 風にする
 #bindkey -d
 bindkey -e
@@ -19,12 +30,9 @@ eval "$(starship init zsh)"
 
 REPORTTIME=3
 
-#export ZPLUG_HOME=/root/.zplug
-#source $ZPLUG_HOME/init.zsh
-source ~/.zplug/init.zsh
 
 function history-all { history -E 1}
-#eval "$(pyenv init -)"
+eval "$(pyenv init -)"
 eval "$(direnv hook zsh)"
 
 
@@ -44,28 +52,28 @@ setopt pushd_ignore_dups # pushd したとき、ディレクトリがすでに�
 setopt auto_pushd # cd [TAB] で以前移動したディレクトリを表示
 DIRSTACKSIZE=100
 
-### plugins ###
-zplug 'zplug/zplug', hook-build:'zplug --self-manage' # 自身をプラグインとして管理する
-zplug "mafredri/zsh-async" # 非同期処理
-zplug "zsh-users/zsh-syntax-highlighting" # 構文ハイライト
-zplug "zsh-users/zsh-history-substring-search" # コマンド履歴
 
-# 入力補完
-zplug "zsh-users/zsh-autosuggestions"
-zplug "zsh-users/zsh-completions"
-zplug "chrissicool/zsh-256color"
+### plugins(zplug) ###
+#export ZPLUG_HOME=/root/.zplug
+#source $ZPLUG_HOME/init.zsh
+#source ~/.zplug/init.zsh
+#zplug 'zplug/zplug', hook-build:'zplug --self-manage' # 自身をプラグインとして管理する
+##zplug "mafredri/zsh-async" # 非同期処理
+#zplug "zsh-users/zsh-syntax-highlighting" # 構文ハイライト
+#zplug "zsh-users/zsh-history-substring-search" # コマンド履歴
+#
+## 入力補完
+##zplug "zsh-users/zsh-autosuggestions"
+#zplug "zsh-users/zsh-completions"
+#zplug "chrissicool/zsh-256color"
 
 # インストールされてないプラグインをインストール
-if ! zplug check --verbose; then
-  printf "Install? [y/N]: "
-  if read -q; then
-    echo; zplug install
-  fi
-fi
-
+#if ! zplug check --verbose; then
+#  printf "Install? [y/N]: "
+#  if read -q; then
 
 # プラグインを読み込みコマンドを$PATHへ追加
-zplug load
+#zplug load
 
 
 
@@ -88,18 +96,17 @@ setopt nolistbeep # ビープ音の停止(補完時)
 ### complement ###
 
 fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)    # gitのbranch名補完
-autoload -Uz compinit; compinit -C      # 補完機能を有効にする
 setopt auto_menu                        # 補完候補が複数あるときに自動的に一覧表示
 bindkey "^[[Z" reverse-menu-complete    # Shift-Tabで補完候補を逆順する("\e[Z"でも動作する)
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # 補完時に大文字小文字を区別しない
 zstyle ':completion:*:sudo:*' command-path $DEFAULT_PREFIX/sbin $DEFAULT_PREFIX/bin \
     /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin    # sudo の後ろでコマンド名を補完
-if [ -e $DEFAULT_PREFIX/share/zsh-completions ]; then
-  fpath=($DEFAULT_PREFIX/share/zsh-completions $fpath)   # zsh-completions有効化
-fi
+#if [ -e $DEFAULT_PREFIX/share/zsh-completions ]; then
+#  fpath=($DEFAULT_PREFIX/share/zsh-completions $fpath)   # zsh-completions有効化
+#fi
 
 # zsh-completions の設定。コマンド補完機能
-autoload -U compinit && compinit -u
+#autoload -U compinit && compinit -u
 
 # [TAB] でパス名の補完候補を表示したあと、
 # 続けて [TAB] を押すと候補からパス名を選択できるようになる
@@ -124,7 +131,7 @@ zstyle ':completion:*' recent-dirs-insert both
 # ※ ディレクトリスタック: 今までに行ったディレクトリのヒストリのこと
 setopt auto_pushd
 
-function chpwd() { ls } # cd後 自動ls
+function chpwd() { ll } # cd後 自動ls
 
 # 拡張 glob を有効にする
 # 拡張 glob を有効にすると # ~ ^ もパターンとして扱われる
@@ -186,7 +193,7 @@ export PATH="$GOENV_ROOT/bin:$PATH"
 export PATH="$HOME/go/1.16.0/bin:$PATH"
 
 
-eval "$(goenv init -)"
+#eval "$(goenv init -)"
 
 #anyframe
 fpath=($HOME/.zsh/anyframe(N-/) $fpath)
@@ -222,4 +229,78 @@ bindkey -M viins '^Y'  yank
 export PATH="$HOME/.nodenv/bin:$PATH"
 export PATH="$HOME/command/:$PATH"
 eval "$(nodenv init -)"
+eval "$(rbenv init - zsh)"
+
+
+
 #eval "$(rbenv init - zsh)"
+if (( $+commands[arch] )); then
+  alias a64="exec arch -arch arm64e '$SHELL'"
+  alias x64="exec arch -arch x86_64 '$SHELL'"
+fi
+
+function runs_on_ARM64() { [[ `uname -m` = "arm64" ]]; }
+function runs_on_X86_64() { [[ `uname -m` = "x86_64" ]]; }
+
+BREW_PATH_OPT="/opt/homebrew/bin"
+BREW_PATH_LOCAL="/usr/local/bin"
+function brew_exists_at_opt() { [[ -d ${BREW_PATH_OPT} ]]; }
+function brew_exists_at_local() { [[ -d ${BREW_PATH_LOCAL} ]]; }
+
+setopt no_global_rcs
+typeset -U path PATH
+path=($path /usr/sbin /sbin)
+
+if runs_on_ARM64; then
+  path=($BREW_PATH_OPT(N-/) $BREW_PATH_LOCAL(N-/) $path)
+else
+  path=($BREW_PATH_LOCAL(N-/) $path)
+fi
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+eval "$(nodenv init -)"
+
+if (which zprof > /dev/null 2>&1) ;then
+  zprof
+fi
+
+### Added by Zinit's installer
+if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
+    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
+        print -P "%F{33} %F{34}Installation successful.%f%b" || \
+        print -P "%F{160} The clone has failed.%f%b"
+fi
+
+source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
+
+
+## plugins(zinit)
+## Plugin history-search-multi-word loaded with investigating.
+zinit load zdharma-continuum/history-search-multi-word
+
+# Two regular plugins loaded without investigating.
+zinit light zsh-users/zsh-autosuggestions
+zinit light zdharma-continuum/fast-syntax-highlighting
+
+#color theme
+zinit light simnalamburt/shellder
+
+# Snippet
+#zinit snippet https://gist.githubusercontent.com/hightemp/5071909/raw/
+### End of Zinit's installer chunk
+
+# Fig post block. Keep at the bottom of this file.
+eval "$(fig init zsh post)"
+

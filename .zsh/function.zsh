@@ -1,4 +1,15 @@
 
+
+# すでにマージ済みのブランチを削除
+# ref:https://qiita.com/ucan-lab/items/97c53a1a929d2858275b
+PROTECT_BRANCHES='master|development|main'
+
+git-delete-merged-branch() {
+    git fetch --prune
+    git branch --merged | egrep -v "\*|${PROTECT_BRANCHES}" | xargs git branch -d
+}
+
+#一括リント
 function lint(){
 	black --exclude="injection\.py|stageouts\.py" $1 --diff --check&&
 	mypy --exclude="injection\.py|stageouts\.py" $1&&
@@ -12,7 +23,7 @@ pss () {
 # serach prev command
 function peco-history-selection() {
     BUFFER=`history -n 1 | tail -r | awk '!a[$0]++' | fzf `
-        CURSOR=$#BUFFER    
+        CURSOR=$#BUFFER
         zle reset-prompt
 }
 
@@ -76,11 +87,10 @@ bindkey '^B' fbrm
 zle -N fshow
 bindkey '^L' fshow
 
-zle -N peco-history-selection 
+zle -N peco-history-selection
 bindkey '^R' peco-history-selection
 
 zle -N ghq-fzf
 bindkey '^]' ghq-fzf
 
 bindkey '^x' anyframe-widget-cdr
-
