@@ -1,5 +1,8 @@
-#[ -s ~/.fig/shell/pre.sh ] && source ~/.fig/shell/pre.sh
+# Fig pre block. Keep at the top of this file.
+export PATH="${PATH}:${HOME}/.local/bin"
+eval "$(fig init zsh pre)"
 
+#
 if [ "$(arch)" = "arm64" ]; then
   eval $(/opt/homebrew/bin/brew shellenv);
 else
@@ -228,10 +231,7 @@ export PATH="$HOME/command/:$PATH"
 eval "$(nodenv init -)"
 eval "$(rbenv init - zsh)"
 
-#### FIG ENV VARIABLES ####
-# Please make sure this block is at the end of this file.
-#[ -s ~/.fig/fig.sh ] && source ~/.fig/fig.sh
-#### END FIG ENV VARIABLES ####
+
 
 #eval "$(rbenv init - zsh)"
 if (( $+commands[arch] )); then
@@ -300,3 +300,7 @@ zinit light simnalamburt/shellder
 # Snippet
 #zinit snippet https://gist.githubusercontent.com/hightemp/5071909/raw/
 ### End of Zinit's installer chunk
+
+# Fig post block. Keep at the bottom of this file.
+eval "$(fig init zsh post)"
+
