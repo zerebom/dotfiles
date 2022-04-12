@@ -19,4 +19,4 @@ yes | ~/.fzf/install
 #sudo fc-cache -vf
 cd /dotfiles
 make install
-yes | zsh
+#yes | zsh
