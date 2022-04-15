@@ -1,16 +1,16 @@
 #!/bin/bash
 
 cd ~
+apt-get update
 #cd ~
 if ! which zsh ; then
 	apt install zsh -y
 fi
 
-apt-get update
 yes | apt-get install exa
 yes | apt-get install neovim
-yes | curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-yes | sh -c "$(curl -fsSL https://starship.rs/install.sh)"
+#yes | curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+#yes | sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 git clone https://github.com/x-motemen/ghq
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 yes | ~/.fzf/install
