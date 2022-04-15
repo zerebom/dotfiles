@@ -17,6 +17,7 @@ autoload -Uz add-zsh-hook # call hook functions
 # cdr
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
+bindkey "^U" backward-kill-line
 
 #source $HOME/.zsh/prompt.zsh
 source $HOME/.zsh/function.zsh
@@ -303,4 +304,3 @@ zinit light simnalamburt/shellder
 
 # Fig post block. Keep at the bottom of this file.
 eval "$(fig init zsh post)"
-

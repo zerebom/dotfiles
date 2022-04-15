@@ -6,6 +6,8 @@ if ! which zsh ; then
 	apt install zsh -y
 fi
 
+apt-get update
+yes | apt-get install exa
 yes | apt-get install neovim
 yes | curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 yes | sh -c "$(curl -fsSL https://starship.rs/install.sh)"
@@ -19,4 +21,4 @@ yes | ~/.fzf/install
 #sudo fc-cache -vf
 cd /dotfiles
 make install
-#yes | zsh
+zsh
