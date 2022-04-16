@@ -20,5 +20,6 @@ yes | ~/.fzf/install
 #sudo cp *.ttf /usr/share/fonts/truetype/cica/
 #sudo fc-cache -vf
 cd /dotfiles
+ln -sfnv .vim/ ~/.config
 make install
 zsh

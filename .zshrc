@@ -1,7 +1,5 @@
 # Fig pre block. Keep at the top of this file.
-export PATH="${PATH}:${HOME}/.local/bin"
-eval "$(fig init zsh pre)"
-
+. "$HOME/.fig/shell/zshrc.pre.zsh"
 #
 if [ "$(arch)" = "arm64" ]; then
   eval $(/opt/homebrew/bin/brew shellenv);
@@ -303,4 +301,4 @@ zinit light simnalamburt/shellder
 ### End of Zinit's installer chunk
 
 # Fig post block. Keep at the bottom of this file.
-eval "$(fig init zsh post)"
+. "$HOME/.fig/shell/zshrc.post.zsh"
