@@ -17,7 +17,7 @@ inoremap jj <Esc>
 set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.vim/bundle/neoterm
 " PLUGIN SETTINGS
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin()
 Plug 'vim-airline/vim-airline'
 Plug 'dense-analysis/ale' "// Linter
 Plug 'airblade/vim-rooter'
@@ -44,7 +44,6 @@ call vundle#begin()
    Plugin 'VundleVim/Vundle.vim'
    Plugin 'file:///Users/oreno/.vim/bundle/YouCompleteMe'
 call vundle#end()
-
 
 colorscheme iceberg
 

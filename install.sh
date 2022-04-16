@@ -1,4 +1,5 @@
 #!/bin/bash
+#cd `dirname $0`
 
 cd ~
 apt-get update
@@ -20,6 +21,7 @@ yes | ~/.fzf/install
 #sudo cp *.ttf /usr/share/fonts/truetype/cica/
 #sudo fc-cache -vf
 cd /dotfiles
-ln -sfnv .vim/ ~/.config
+#ln -sfnv .vim/ ~/.config/
+ln -sfnv .vim $HOME/.config/nvim
 make install
 zsh
