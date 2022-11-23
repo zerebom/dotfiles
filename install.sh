@@ -8,8 +8,8 @@ if ! which zsh ; then
 	apt install zsh -y
 fi
 
-yes | apt-get install exa
-yes | apt-get install neovim
+yes | sudo apt-get install exa
+yes | sudo apt-get install neovim
 #yes | curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 #yes | sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 git clone https://github.com/x-motemen/ghq
