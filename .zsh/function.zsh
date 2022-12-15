@@ -4,6 +4,10 @@
 # ref:https://qiita.com/ucan-lab/items/97c53a1a929d2858275b
 PROTECT_BRANCHES='master|development|main'
 
+function medicine () {
+	echo '{"codes": ["610406079"], "search_date": { "year": 2022, "month": 11, "day": 11 } } }' | ./scripts/evans receipt-local cli call henryapp.receipt.MasterService.ListMedicines
+}
+
 git-delete-merged-branch() {
     git fetch --prune
     git branch --merged | egrep -v "\*|${PROTECT_BRANCHES}" | xargs git branch -d
@@ -39,7 +43,7 @@ function ghq-fzf() {
 }
 
 # fbr - checkout git branch
-fbr() {
+function fbr() {
   local branches branch
   branches=$(git branch -vv) &&
   branch=$(echo "$branches" | fzf +m) &&
@@ -47,7 +51,7 @@ fbr() {
 }
 
 # fbrm - checkout git branch (including remote branches)
-fbrm() {
+function fbrm() {
   local branches branch
   branches=$(git branch --all | grep -v HEAD) &&
   branch=$(echo "$branches" |
@@ -56,7 +60,7 @@ fbrm() {
 }
 
 # fshow - git commit browser
-fshow() {
+function fshow() {
   git log --graph --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
   fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
@@ -94,3 +98,24 @@ zle -N ghq-fzf
 bindkey '^]' ghq-fzf
 
 bindkey '^x' anyframe-widget-cdr
+
+
+function cd() {
+    if [[ "$#" != 0 ]]; then
+        builtin cd "$@";
+        return
+    fi
+    while true; do
+        local lsd=$(echo ".." && ls -p | grep '/$' | sed 's;/$;;')
+        local dir="$(printf '%s\n' "${lsd[@]}" |
+            fzf --reverse --preview '
+                __cd_nxt="$(echo {})";
+                __cd_path="$(echo $(pwd)/${__cd_nxt} | sed "s;//;/;")";
+                echo $__cd_path;
+                echo;
+                ls -p --color=always "${__cd_path}";
+        ')"
+        [[ ${#dir} != 0 ]] || return 0
+        builtin cd "$dir" &> /dev/null
+    done
+}
