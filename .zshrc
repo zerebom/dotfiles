@@ -227,7 +227,7 @@ zstyle ':completion:*' recent-dirs-insert both
 # ※ ディレクトリスタック: 今までに行ったディレクトリのヒストリのこと
 setopt auto_pushd
 
-function chpwd() { ll } # cd後 自動ls
+function chpwd() { ls } # cd後 自動ls
 
 # 拡張 glob を有効にする
 # 拡張 glob を有効にすると # ~ ^ もパターンとして扱われる
