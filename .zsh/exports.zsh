@@ -19,6 +19,7 @@ source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh
 export GOPRIVATE=github.com/wantedly
 export EDITOR=vim
 export REFLECTION_SERVER=apis-reflection-server.apis-reflection-server:80
+export JAVA_HOME=`/usr/libexec/java_home -v 11`
 
 export PATH="$HOME/.nodenv/bin:$PATH"
 eval "$(nodenv init -)"

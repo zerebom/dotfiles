@@ -1,5 +1,5 @@
 # Fig pre block. Keep at the top of this file.
-. "$HOME/.fig/shell/zshrc.pre.zsh"
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.pre.zsh"
 #
 if [ "$(arch)" = "arm64" ]; then
   eval $(/opt/homebrew/bin/brew shellenv);
@@ -46,34 +46,134 @@ setopt hist_ignore_all_dups # 同じコマンドをヒストリに残さない
 setopt hist_ignore_space # スペースから始まるコマンド行はヒストリに残さない
 setopt hist_reduce_blanks # ヒストリに保存するときに余分なスペースを削除する
 
+### history ###
+# export HISTFILE="$XDG_STATE_HOME/zsh_history"
+export HISTSIZE=12000
+export SAVEHIST=10000
+
+setopt AUTO_PUSHD
+setopt PUSHD_IGNORE_DUPS
+setopt GLOBDOTS
+setopt APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt HIST_SAVE_NO_DUPS
+setopt INTERACTIVE_COMMENTS
+setopt MAGIC_EQUAL_SUBST
+setopt PRINT_EIGHT_BIT
+setopt NO_FLOW_CONTROL
+
+zshaddhistory() {
+    local line="${1%%$'\n'}"
+    [[ ! "$line" =~ "^(cd|history|jj?|lazygit|la|ll|ls|rm|rmdir|trash)($| )" ]]
+}
+
+### key bindings ###
+clear-screen-and-update-prompt() {
+    ALMEL_STATUS=0
+    almel::precmd
+    zle .clear-screen
+}
+zle -N clear-screen clear-screen-and-update-prompt
+
+widget::history() {
+    local selected="$(history -inr 1 | fzf --exit-0 --query "$LBUFFER" | cut -d' ' -f4- | sed 's/\\n/\n/g')"
+    if [ -n "$selected" ]; then
+        BUFFER="$selected"
+        CURSOR=$#BUFFER
+    fi
+    zle -R -c # refresh screen
+}
+
+widget::ghq::source() {
+    local session color icon green="\e[32m" blue="\e[34m" reset="\e[m" checked="\uf631" unchecked="\uf630"
+    local sessions=($(tmux list-sessions -F "#S" 2>/dev/null))
+
+    ghq list | sort | while read -r repo; do
+        session="${repo//[:. ]/-}"
+        color="$blue"
+        icon="$unchecked"
+        if (( ${+sessions[(r)$session]} )); then
+            color="$green"
+            icon="$checked"
+        fi
+        printf "$color$icon %s$reset\n" "$repo"
+    done
+}
+widget::ghq::select() {
+    local root="$(ghq root)"
+    widget::ghq::source | fzf --exit-0 --preview="fzf-preview-git ${(q)root}/{+2}" --preview-window="right:60%" | cut -d' ' -f2-
+}
+widget::ghq::dir() {
+    local selected="$(widget::ghq::select)"
+    if [ -z "$selected" ]; then
+        return
+    fi
+
+    local repo_dir="$(ghq list --exact --full-path "$selected")"
+    BUFFER="cd ${(q)repo_dir}"
+    zle accept-line
+    zle -R -c # refresh screen
+}
+widget::ghq::session() {
+    local selected="$(widget::ghq::select)"
+    if [ -z "$selected" ]; then
+        return
+    fi
+
+    local repo_dir="$(ghq list --exact --full-path "$selected")"
+    local session_name="${selected//[:. ]/-}"
+
+    if [ -z "$TMUX" ]; then
+        BUFFER="tmux new-session -A -s ${(q)session_name} -c ${(q)repo_dir}"
+        zle accept-line
+    elif [ "$(tmux display-message -p "#S")" = "$session_name" ] && [ "$PWD" != "$repo_dir" ]; then
+        BUFFER="cd ${(q)repo_dir}"
+        zle accept-line
+    else
+        tmux new-session -d -s "$session_name" -c "$repo_dir" 2>/dev/null
+        tmux switch-client -t "$session_name"
+    fi
+    zle -R -c # refresh screen
+}
+
+forward-kill-word() {
+    zle vi-forward-word
+    zle vi-backward-kill-word
+}
+
+zle -N widget::history
+zle -N widget::ghq::dir
+zle -N widget::ghq::session
+zle -N forward-kill-word
+
+bindkey -v
+bindkey "^R"        widget::history                 # C-r
+bindkey "^G"        widget::ghq::session            # C-g
+bindkey "^[g"       widget::ghq::dir                # Alt-g
+bindkey "^A"        beginning-of-line               # C-a
+bindkey "^E"        end-of-line                     # C-e
+bindkey "^K"        kill-line                       # C-k
+bindkey "^Q"        push-line-or-edit               # C-q
+bindkey "^W"        vi-backward-kill-word           # C-w
+bindkey "^X^W"      forward-kill-word               # C-x C-w
+bindkey "^?"        backward-delete-char            # backspace
+bindkey "^[[3~"     delete-char                     # delete
+bindkey "^[[1;3D"   backward-word                   # Alt + arrow-left
+bindkey "^[[1;3C"   forward-word                    # Alt + arrow-right
+bindkey "^[^?"      vi-backward-kill-word           # Alt + backspace
+bindkey "^[[1;33~"  kill-word                       # Alt + delete
+bindkey -M vicmd "^A" beginning-of-line             # vi: C-a
+bindkey -M vicmd "^E" end-of-line                   # vi: C-e
+
+
+
 ### directory stack ###
 setopt pushd_ignore_dups # pushd したとき、ディレクトリがすでにスタックに含まれていればスタックに追加しない
 setopt auto_pushd # cd [TAB] で以前移動したディレクトリを表示
 DIRSTACKSIZE=100
-
-
-### plugins(zplug) ###
-#export ZPLUG_HOME=/root/.zplug
-#source $ZPLUG_HOME/init.zsh
-#source ~/.zplug/init.zsh
-#zplug 'zplug/zplug', hook-build:'zplug --self-manage' # 自身をプラグインとして管理する
-##zplug "mafredri/zsh-async" # 非同期処理
-#zplug "zsh-users/zsh-syntax-highlighting" # 構文ハイライト
-#zplug "zsh-users/zsh-history-substring-search" # コマンド履歴
-#
-## 入力補完
-##zplug "zsh-users/zsh-autosuggestions"
-#zplug "zsh-users/zsh-completions"
-#zplug "chrissicool/zsh-256color"
-
-# インストールされてないプラグインをインストール
-#if ! zplug check --verbose; then
-#  printf "Install? [y/N]: "
-#  if read -q; then
-
-# プラグインを読み込みコマンドを$PATHへ追加
-#zplug load
-
 
 
 # git のカラー表示
@@ -100,9 +200,6 @@ bindkey "^[[Z" reverse-menu-complete    # Shift-Tabで補完候補を逆順す�
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # 補完時に大文字小文字を区別しない
 zstyle ':completion:*:sudo:*' command-path $DEFAULT_PREFIX/sbin $DEFAULT_PREFIX/bin \
     /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin    # sudo の後ろでコマンド名を補完
-#if [ -e $DEFAULT_PREFIX/share/zsh-completions ]; then
-#  fpath=($DEFAULT_PREFIX/share/zsh-completions $fpath)   # zsh-completions有効化
-#fi
 
 # zsh-completions の設定。コマンド補完機能
 #autoload -U compinit && compinit -u
@@ -160,14 +257,6 @@ LC_ALL=en_US.UTF-8
 [ ! -s /Users/wantedly206/.travis/travis.sh ] || source /Users/wantedly206/.travis/travis.sh
 
 
-#export PATH="$HOME/.poetry/bin:$PATH"
-#export PATH="/opt/homebrew/bin:$PATH"
-#export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
-
-# tmux
-#if [ $SHLVL = 1 ]; then
-#  tmux
-#fi
 
 
 # >>> conda initialize >>>
@@ -203,8 +292,6 @@ zstyle ":anyframe:selector:" use fzf
 
 
 ## コマンドラインをエディタで起動する
-#$autoload -Uz edit-command-line
-#zle -N edit-command-line
 bindkey '^y' edit-command-line
 
 # viminsとemacsの共存
@@ -301,4 +388,4 @@ zinit light simnalamburt/shellder
 ### End of Zinit's installer chunk
 
 # Fig post block. Keep at the bottom of this file.
-. "$HOME/.fig/shell/zshrc.post.zsh"
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
