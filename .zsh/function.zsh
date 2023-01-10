@@ -89,7 +89,7 @@ zle -N fbrm
 bindkey '^B' fbrm
 
 zle -N fshow
-bindkey '^L' fshow
+bindkey '^S' fshow
 
 zle -N peco-history-selection
 bindkey '^R' peco-history-selection
