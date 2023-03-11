@@ -23,6 +23,6 @@ yes | ~/.fzf/install
 cd /dotfiles
 #ln -sfnv .vim/ ~/.config/
 ln -sfnv .vim $HOME/.config/nvim
-curl -sS https://starship.rs/install.sh | sh
+curl -sS https://starship.rs/install.sh | sh -s -- -y
 make install
 zsh
