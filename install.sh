@@ -20,7 +20,6 @@ yes | ~/.fzf/install
 #sudo mkdir  /usr/share/fonts/truetype/cica
 #sudo cp *.ttf /usr/share/fonts/truetype/cica/
 #sudo fc-cache -vf
-cd /dotfiles
 #ln -sfnv .vim/ ~/.config/
 ln -sfnv .vim $HOME/.config/nvim
 curl -sS https://starship.rs/install.sh | sh -s -- -y
