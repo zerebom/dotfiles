@@ -23,5 +23,3 @@ yes | ~/.fzf/install
 #ln -sfnv .vim/ ~/.config/
 ln -sfnv .vim $HOME/.config/nvim
 curl -sS https://starship.rs/install.sh | sh -s -- -y
-make install
-zsh
