@@ -89,7 +89,7 @@ zle -N fbrm
 bindkey '^B' fbrm
 
 zle -N fshow
-bindkey '^S' fshow
+#bindkey '^S' fshow
 
 zle -N peco-history-selection
 bindkey '^R' peco-history-selection
@@ -97,7 +97,7 @@ bindkey '^R' peco-history-selection
 zle -N ghq-fzf
 bindkey '^]' ghq-fzf
 
-bindkey '^x' anyframe-widget-cdr
+#bindkey '^x' anyframe-widget-cdr
 
 
 function cd() {

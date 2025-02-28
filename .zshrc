@@ -7,6 +7,7 @@ else
   eval $(/usr/local/bin/brew shellenv);
 fi
 
+
 # キーバインディングを emacs 風にする
 #bindkey -d
 bindkey -e
@@ -24,7 +25,6 @@ source $HOME/.zsh/fzf.zsh
 export STARSHIP_CONFIG=~/.starship.toml
 eval "$(starship init zsh)"
 
-. $HOME/ghq/github.com/rupa/z/z.sh
 
 
 REPORTTIME=3
@@ -240,12 +240,6 @@ setopt extended_glob
 # ※ たとえば Ctrl-W でカーソル前の1単語を削除したとき / までで削除が止まる
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/wantedly206/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/wantedly206/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/wantedly206/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/wantedly206/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
-
 
 LC_CTYPE=en_US.UTF-8
 LC_ALL=en_US.UTF-8
@@ -279,16 +273,11 @@ unset __conda_setup
 export GOENV_ROOT="$HOME/.goenv"
 export PATH="$GOENV_ROOT/bin:$PATH"
 export PATH="$HOME/go/1.16.0/bin:$PATH"
+export PATH="$$HOME/.nvm/versions/node/v18.17.1/bin/:$PATH"
+
 
 
 #eval "$(goenv init -)"
-
-#anyframe
-fpath=($HOME/.zsh/anyframe(N-/) $fpath)
-autoload -Uz anyframe-init
-anyframe-init
-zstyle ":anyframe:selector:" use fzf
-
 
 
 ## コマンドラインをエディタで起動する
@@ -312,10 +301,12 @@ bindkey -M viins '^U'  backward-kill-line
 bindkey -M viins '^W'  backward-kill-word
 bindkey -M viins '^Y'  yank
 
-export PATH="$HOME/.nodenv/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+#export PATH="$HOME/.nodenv/bin:$PATH"
 export PATH="$HOME/command/:$PATH"
-eval "$(nodenv init -)"
-eval "$(rbenv init - zsh)"
+#export PATH="/Users/zerebom/.rye/shims:$PATH"
+#eval "$(nodenv init -)"
+#eval "$(rbenv init - zsh)"
 
 
 
@@ -344,7 +335,6 @@ else
 fi
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
-eval "$(nodenv init -)"
 
 if (which zprof > /dev/null 2>&1) ;then
   zprof
@@ -377,7 +367,10 @@ zinit light-mode for \
 zinit load zdharma-continuum/history-search-multi-word
 
 # Two regular plugins loaded without investigating.
+zinit ice wait lucid
 zinit light zsh-users/zsh-autosuggestions
+
+zinit ice wait lucid
 zinit light zdharma-continuum/fast-syntax-highlighting
 
 #color theme
@@ -389,3 +382,78 @@ zinit light simnalamburt/shellder
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
+
+## The next line updates PATH for the Google Cloud SDK.
+#if [ -f '/Users/zerebom/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/zerebom/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+#if [ -f '/Users/zerebom/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/zerebom/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+#source "$HOME/.rye/env"
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+
+
+
+# pnpm
+# pnpm
+export PNPM_HOME="/Users/zerebom/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# nvmの初期化スクリプトを関数にラップ
+load_nvm() {
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+}
+
+# コマンド実行時にnvmを初期化
+nvm() {
+  unset -f nvm
+  load_nvm
+  nvm "$@"
+}
+
+# 他のnvmコマンドも同様にラップ
+npm() {
+  unset -f npm
+  load_nvm
+  npm "$@"
+}
+
+node() {
+  unset -f node
+  load_nvm
+  node "$@"
+}
+
+# 初期化を遅延させる
+autoload -U compinit && compinit
+
+
+. "$HOME/.cargo/env"
+
+
+# Check if ADC credentials and Google account login are both set
+# if ! gcloud auth application-default print-access-token &>/dev/null || ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &>/dev/null; then
+#     echo "You need to log in to gcloud and update ADC credentials. Running login command..."
+#     gcloud auth login --update-adc
+#     if [ $? -eq 0 ]; then
+#         echo "Successfully logged in and updated ADC credentials."
+#     else
+#         echo "Failed to log in. Please try again manually."
+#     fi
+# else
+#     echo "Already logged in and ADC credentials are set."
+# fi
+
+# bun completions
+[ -s "/Users/zerebom/.bun/_bun" ] && source "/Users/zerebom/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
