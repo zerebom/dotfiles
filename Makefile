@@ -14,7 +14,12 @@ install: ## Create symlink to home directory
 	@echo 'Copyright (c) 2013-2015 BABAROT All Rights Reserved.'
 	@echo '==> Start to deploy dotfiles to home directory.'
 	@echo ''
-	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@$(foreach val, $(DOTFILES), \
+		if [ -e $(HOME)/$(val) ] && [ ! -L $(HOME)/$(val) ]; then \
+			echo "Backing up existing $(val) to $(val).backup"; \
+			mv $(HOME)/$(val) $(HOME)/$(val).backup; \
+		fi; \
+		ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 
 clean: ## Remove the dot files and this repo
 	@echo 'Remove dot files in your home directory...'

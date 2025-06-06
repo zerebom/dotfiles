@@ -1,11 +1,5 @@
 # Fig pre block. Keep at the top of this file.
 [[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.pre.zsh"
-#
-if [ "$(arch)" = "arm64" ]; then
-  eval $(/opt/homebrew/bin/brew shellenv);
-else
-  eval $(/usr/local/bin/brew shellenv);
-fi
 
 
 # キーバインディング: vi-modeベースでemacsのキーも使える設定
@@ -86,21 +80,19 @@ HISTFILE=~/.zsh_history
 HISTSIZE=1000000
 SAVEHIST=1000000
 
-setopt share_history #zsh間で履歴共有
-setopt hist_ignore_dups # 直前と同じコマンドの場合はヒストリに追加しない
-setopt hist_ignore_all_dups # 同じコマンドをヒストリに残さない
-setopt hist_ignore_space # スペースから始まるコマンド行はヒストリに残さない
-setopt hist_reduce_blanks # ヒストリに保存するときに余分なスペースを削除する
-
-setopt AUTO_PUSHD
-setopt PUSHD_IGNORE_DUPS
-setopt GLOBDOTS
+# History options
+setopt SHARE_HISTORY
 setopt APPEND_HISTORY
 setopt EXTENDED_HISTORY
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_REDUCE_BLANKS
 setopt HIST_SAVE_NO_DUPS
+
+# General options
+setopt AUTO_PUSHD
+setopt PUSHD_IGNORE_DUPS
+setopt GLOBDOTS
 setopt INTERACTIVE_COMMENTS
 setopt MAGIC_EQUAL_SUBST
 setopt PRINT_EIGHT_BIT
@@ -266,16 +258,9 @@ setopt correct
 setopt interactive_comments
 
 ### cdr ###
-autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-add-zsh-hook chpwd chpwd_recent_dirs
 zstyle ':chpwd:*' recent-dirs-max 5000
 zstyle ':chpwd:*' recent-dirs-default yes
 zstyle ':completion:*' recent-dirs-insert both
-
-# cd した先のディレクトリをディレクトリスタックに追加する
-# cd [TAB] でディレクトリのヒストリが表示されるので、選択して移動できる
-# ※ ディレクトリスタック: 今までに行ったディレクトリのヒストリのこと
-setopt auto_pushd
 
 function chpwd() { ls } # cd後 自動ls
 
@@ -297,8 +282,8 @@ LC_ALL=en_US.UTF-8
 
 
 
-# added by travis gem
-[ ! -s /Users/wantedly206/.travis/travis.sh ] || source /Users/wantedly206/.travis/travis.sh
+# Travis CI integration (if available)
+[ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
 
 
 
@@ -333,11 +318,10 @@ conda() {
 export GOENV_ROOT="$HOME/.goenv"
 export PATH="$GOENV_ROOT/bin:$PATH"
 export PATH="$HOME/go/1.16.0/bin:$PATH"
-export PATH="$$HOME/.nvm/versions/node/v18.17.1/bin/:$PATH"
+export PATH="$HOME/.nvm/versions/node/v18.17.1/bin:$PATH"
 
 
 
-#eval "$(goenv init -)"
 
 
 ## コマンドラインをエディタで起動する
@@ -362,15 +346,7 @@ bindkey -M viins '^W'  backward-kill-word
 bindkey -M viins '^Y'  yank
 
 export PATH="$HOME/.local/bin:$PATH"
-#export PATH="$HOME/.nodenv/bin:$PATH"
-export PATH="$HOME/command/:$PATH"
-#export PATH="/Users/zerebom/.rye/shims:$PATH"
-#eval "$(nodenv init -)"
-#eval "$(rbenv init - zsh)"
-
-
-
-#eval "$(rbenv init - zsh)"
+export PATH="$HOME/command:$PATH"
 if (( $+commands[arch] )); then
   alias a64="exec arch -arch arm64e '$SHELL'"
   alias x64="exec arch -arch x86_64 '$SHELL'"
@@ -384,15 +360,9 @@ BREW_PATH_LOCAL="/usr/local/bin"
 function brew_exists_at_opt() { [[ -d ${BREW_PATH_OPT} ]]; }
 function brew_exists_at_local() { [[ -d ${BREW_PATH_LOCAL} ]]; }
 
-setopt no_global_rcs
+# Prevent duplicate PATH entries
 typeset -U path PATH
-path=($path /usr/sbin /sbin)
-
-if runs_on_ARM64; then
-  path=($BREW_PATH_OPT(N-/) $BREW_PATH_LOCAL(N-/) $path)
-else
-  path=($BREW_PATH_LOCAL(N-/) $path)
-fi
+setopt no_global_rcs
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
 
@@ -445,13 +415,6 @@ zinit light simnalamburt/shellder
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
 
-## The next line updates PATH for the Google Cloud SDK.
-#if [ -f '/Users/zerebom/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/zerebom/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-#if [ -f '/Users/zerebom/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/zerebom/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
-
-#source "$HOME/.rye/env"
 
 
 
@@ -497,18 +460,6 @@ node() {
 . "$HOME/.cargo/env"
 
 
-# Check if ADC credentials and Google account login are both set
-# if ! gcloud auth application-default print-access-token &>/dev/null || ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &>/dev/null; then
-#     echo "You need to log in to gcloud and update ADC credentials. Running login command..."
-#     gcloud auth login --update-adc
-#     if [ $? -eq 0 ]; then
-#         echo "Successfully logged in and updated ADC credentials."
-#     else
-#         echo "Failed to log in. Please try again manually."
-#     fi
-# else
-#     echo "Already logged in and ADC credentials are set."
-# fi
 
 # bun completions
 [ -s "/Users/zerebom/.bun/_bun" ] && source "/Users/zerebom/.bun/_bun"
@@ -518,24 +469,21 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Google Cloud SDK - lazy load
-if [ -d '/Users/zerebom/google-cloud-sdk' ]; then
-    export PATH="/Users/zerebom/google-cloud-sdk/bin:$PATH"
+GCLOUD_SDK_PATH="$HOME/google-cloud-sdk"
+if [ -d "$GCLOUD_SDK_PATH" ]; then
+    export PATH="$GCLOUD_SDK_PATH/bin:$PATH"
     
     # Load completion only when gcloud is used
     gcloud() {
         unset -f gcloud
-        if [ -f '/Users/zerebom/google-cloud-sdk/path.zsh.inc' ]; then 
-            . '/Users/zerebom/google-cloud-sdk/path.zsh.inc'
-        fi
-        if [ -f '/Users/zerebom/google-cloud-sdk/completion.zsh.inc' ]; then 
-            . '/Users/zerebom/google-cloud-sdk/completion.zsh.inc'
-        fi
+        [ -f "$GCLOUD_SDK_PATH/path.zsh.inc" ] && . "$GCLOUD_SDK_PATH/path.zsh.inc"
+        [ -f "$GCLOUD_SDK_PATH/completion.zsh.inc" ] && . "$GCLOUD_SDK_PATH/completion.zsh.inc"
         gcloud "$@"
     }
 fi
 
-# Added by Windsurf
-export PATH="/Users/zerebom/.codeium/windsurf/bin:$PATH"
+# Windsurf (if available)
+[ -d "$HOME/.codeium/windsurf/bin" ] && export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
 # npm global
 export PATH="$HOME/.npm-global/bin:$PATH"
