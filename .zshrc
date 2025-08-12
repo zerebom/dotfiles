@@ -318,7 +318,7 @@ conda() {
 export GOENV_ROOT="$HOME/.goenv"
 export PATH="$GOENV_ROOT/bin:$PATH"
 export PATH="$HOME/go/1.16.0/bin:$PATH"
-export PATH="$HOME/.nvm/versions/node/v18.17.1/bin:$PATH"
+# export PATH="$HOME/.nvm/versions/node/v18.17.1/bin:$PATH" # 削除: ハードコードされたNode.jsパス
 
 
 
@@ -427,32 +427,10 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-# nvmの初期化スクリプトを関数にラップ
-load_nvm() {
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
-}
-
-# コマンド実行時にnvmを初期化
-nvm() {
-  unset -f nvm
-  load_nvm
-  nvm "$@"
-}
-
-# 他のnvmコマンドも同様にラップ
-npm() {
-  unset -f npm
-  load_nvm
-  npm "$@"
-}
-
-node() {
-  unset -f node
-  load_nvm
-  node "$@"
-}
+# nvm を即座にロード（全てのnpmグローバルパッケージが即座に使える）
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # compinit は .zshenvまたは他の場所で一度だけ実行
 
@@ -487,3 +465,4 @@ fi
 
 # npm global
 export PATH="$HOME/.npm-global/bin:$PATH"
+export PATH="$PATH:/path/to/osascript"
