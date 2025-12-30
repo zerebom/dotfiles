@@ -111,7 +111,7 @@ widget::history() {
 }
 
 widget::ghq::source() {
-    local session color icon green=$'\e[32m' blue=$'\e[34m' reset=$'\e[m' checked=$'\uf631' unchecked=$'\uf630'
+    local session color icon green=$'\e[32m' blue=$'\e[34m' reset=$'\e[m' checked='*' unchecked='-'
     local sessions=($(tmux list-sessions -F "#S" 2>/dev/null))
 
     ghq list | sort | while read -r repo; do
@@ -147,7 +147,7 @@ widget::ghq::session() {
     fi
 
     local repo_dir="$(ghq list --exact --full-path "$selected")"
-    local session_name="${selected//[:. ]/-}"
+    local session_name="${selected##*/}"
 
     if [ -z "$TMUX" ]; then
         BUFFER="tmux new-session -A -s ${(q)session_name} -c ${(q)repo_dir}"
@@ -156,7 +156,8 @@ widget::ghq::session() {
         BUFFER="cd ${(q)repo_dir}"
         zle accept-line
     else
-        tmux new-session -d -s "$session_name" -c "$repo_dir" 2>/dev/null
+        tmux has-session -t "$session_name" 2>/dev/null || \
+            tmux new-session -d -s "$session_name" -c "$repo_dir"
         tmux switch-client -t "$session_name"
     fi
     zle -R -c # refresh screen
