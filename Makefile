@@ -20,6 +20,14 @@ install: ## Create symlink to home directory
 			mv $(HOME)/$(val) $(HOME)/$(val).backup; \
 		fi; \
 		ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@echo ''
+	@echo '==> Setting up .config symlinks...'
+	@mkdir -p $(HOME)/.config
+	@if [ -e $(HOME)/.config/ghostty ] && [ ! -L $(HOME)/.config/ghostty ]; then \
+		echo "Backing up existing .config/ghostty"; \
+		mv $(HOME)/.config/ghostty $(HOME)/.config/ghostty.backup; \
+	fi
+	@ln -sfnv $(DOTPATH)/.config/ghostty $(HOME)/.config/ghostty
 
 clean: ## Remove the dot files and this repo
 	@echo 'Remove dot files in your home directory...'

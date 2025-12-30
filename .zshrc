@@ -59,19 +59,9 @@ if command -v pyenv >/dev/null 2>&1; then
         pip3 "$@"
     }
 fi
-# Lazy load direnv
+# Direnv setup
 if command -v direnv >/dev/null 2>&1; then
-    # Hook direnv into cd command
-    _direnv_hook() {
-        eval "$(direnv hook zsh)"
-        unset -f _direnv_hook
-    }
-    
-    # Override cd to initialize direnv on first use
-    cd() {
-        _direnv_hook 2>/dev/null
-        builtin cd "$@"
-    }
+    eval "$(direnv hook zsh)"
 fi
 
 
@@ -234,15 +224,14 @@ zstyle ':completion:*:sudo:*' command-path $DEFAULT_PREFIX/sbin $DEFAULT_PREFIX/
     /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin    # sudo の後ろでコマンド名を補完
 
 # zsh-completions の設定。コマンド補完機能
+# 1日1回だけ compinit を再生成（24時間以上経過した場合のみ）
 autoload -Uz compinit
-# Zinit用のcompinit最適化
 () {
-    local zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-    if [[ $zcompdump -nt /usr/share/zsh ]] && [[ ! $zcompdump.zwc -ot $zcompdump ]]; then
-        compinit -C
-    else
+    setopt local_options EXTENDED_GLOB
+    if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
         compinit
-        [[ -f "$zcompdump" && ! -f "$zcompdump.zwc" ]] && zcompile "$zcompdump"
+    else
+        compinit -C
     fi
 }
 
@@ -427,10 +416,8 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-# nvm を即座にロード（全てのnpmグローバルパッケージが即座に使える）
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# fnm (Fast Node Manager) - NVMより高速
+eval "$(fnm env --use-on-cd)"
 
 # compinit は .zshenvまたは他の場所で一度だけ実行
 
@@ -466,3 +453,10 @@ fi
 # npm global
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$PATH:/path/to/osascript"
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+
+# Added by Antigravity
+export PATH="/Users/zerebom/.antigravity/antigravity/bin:$PATH"
+
+
