@@ -1,0 +1,63 @@
+# ===========================================
+# Ghostty Configuration
+# ===========================================
+
+# -------------------------------------------
+# Shell / Command
+# -------------------------------------------
+# tmux auto-start: attach to existing session or create new
+command = tmux new-session -A -s main
+
+# -------------------------------------------
+# Theme / Color Scheme
+# -------------------------------------------
+# TokyoNight: 人気の暗めカラースキーム
+theme = TokyoNight
+
+# -------------------------------------------
+# Window Settings
+# -------------------------------------------
+# 起動時にウィンドウを最大化
+maximize = true
+
+# 背景の不透明度 (0.0-1.0)
+# 0.8 = 20%透過
+background-opacity = 0.8
+
+# 透過背景にブラー効果を適用
+background-blur = true
+
+# macOSのタイトルバースタイル
+# tabs: タブ形式で表示
+macos-titlebar-style = tabs
+
+# -------------------------------------------
+# Font Settings
+# -------------------------------------------
+# PlemolJP35 Console NF: 日本語対応 + Nerd Fonts アイコン
+font-family = PlemolJP35 Console NF
+
+# フォントサイズ (pt)
+font-size = 20
+
+# フォントを太く表示 (macOSで視認性向上)
+font-thicken = true
+
+# セルの高さを調整 (行間を広げる)
+adjust-cell-height = 2
+
+# -------------------------------------------
+# Key Bindings
+# -------------------------------------------
+# Vim風のペイン移動
+keybind = ctrl+h=goto_split:left
+keybind = ctrl+l=goto_split:right
+
+# -------------------------------------------
+# Shell Integration
+# -------------------------------------------
+# 新規ウィンドウで現在の作業ディレクトリを継承
+window-inherit-working-directory = true
+
+# シェル統合を自動検出
+shell-integration = detect

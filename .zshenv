@@ -24,6 +24,12 @@ fi
 
 source $HOME/.zsh/exports.zsh
 source $HOME/.zsh/aliases.zsh
+[[ -f "$HOME/.zsh/secrets.zsh" ]] && source "$HOME/.zsh/secrets.zsh"
+
+# Load GitHub token if exists
+if [ -f "$HOME/.dotfiles/.github_token" ]; then
+  source $HOME/.dotfiles/.github_token
+fi
 
 # rbenv
 if [ -d "${HOME}/.rbenv" ]; then
