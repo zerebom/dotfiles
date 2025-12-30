@@ -111,7 +111,7 @@ widget::history() {
 }
 
 widget::ghq::source() {
-    local session color icon green="\e[32m" blue="\e[34m" reset="\e[m" checked="\uf631" unchecked="\uf630"
+    local session color icon green=$'\e[32m' blue=$'\e[34m' reset=$'\e[m' checked=$'\uf631' unchecked=$'\uf630'
     local sessions=($(tmux list-sessions -F "#S" 2>/dev/null))
 
     ghq list | sort | while read -r repo; do
@@ -127,7 +127,7 @@ widget::ghq::source() {
 }
 widget::ghq::select() {
     local root="$(ghq root)"
-    widget::ghq::source | fzf --exit-0 --preview="fzf-preview-git ${(q)root}/{+2}" --preview-window="right:60%" | cut -d' ' -f2-
+    widget::ghq::source | fzf --exit-0 --preview="ls -laTp ${(q)root}/{2} | tail -n+4 | awk '{print \$9\"/\"\$6\"/\"\$7 \" \" \$10}'" --preview-window="right:60%" | cut -d' ' -f2-
 }
 widget::ghq::dir() {
     local selected="$(widget::ghq::select)"
@@ -324,7 +324,6 @@ bindkey -M viins '^A'  beginning-of-line
 bindkey -M viins '^D'  delete-char-or-list
 bindkey -M viins '^E'  end-of-line
 bindkey -M viins '^F'  forward-char
-bindkey -M viins '^G'  send-break
 bindkey -M viins '^H'  backward-delete-char
 bindkey -M viins '^K'  kill-line
 bindkey -M viins '^N'  down-line-or-history
