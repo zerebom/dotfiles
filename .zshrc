@@ -115,7 +115,7 @@ widget::ghq::source() {
     local sessions=($(tmux list-sessions -F "#S" 2>/dev/null))
 
     ghq list | sort | while read -r repo; do
-        session="${repo//[:. ]/-}"
+        session="${repo##*/}"
         color="$blue"
         icon="$unchecked"
         if (( ${+sessions[(r)$session]} )); then
