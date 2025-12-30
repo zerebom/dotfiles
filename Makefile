@@ -28,6 +28,10 @@ install: ## Create symlink to home directory
 		mv $(HOME)/.config/ghostty $(HOME)/.config/ghostty.backup; \
 	fi
 	@ln -sfnv $(DOTPATH)/.config/ghostty $(HOME)/.config/ghostty
+	@echo ''
+	@echo '==> Setting up .claude symlinks...'
+	@mkdir -p $(HOME)/.claude
+	@ln -sfnv $(DOTPATH)/.claude/global.md $(HOME)/.claude/CLAUDE.md
 
 clean: ## Remove the dot files and this repo
 	@echo 'Remove dot files in your home directory...'

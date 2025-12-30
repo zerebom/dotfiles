@@ -147,7 +147,15 @@ widget::ghq::session() {
     fi
 
     local repo_dir="$(ghq list --exact --full-path "$selected")"
-    local session_name="${selected##*/}"
+    local session_name
+    if [[ "$selected" == *"/worktrees/"* ]]; then
+        # worktreeの場合: worktrees以降をハイフンで連結
+        session_name="${selected##*/worktrees/}"
+        session_name="${session_name//\//-}"
+    else
+        # 通常のリポジトリ: 最後の部分だけ
+        session_name="${selected##*/}"
+    fi
 
     if [ -z "$TMUX" ]; then
         BUFFER="tmux new-session -A -s ${(q)session_name} -c ${(q)repo_dir}"
