@@ -122,7 +122,7 @@ widget::ghq::source() {
             color="$green"
             icon="$checked"
         fi
-        printf "$color$icon %s$reset\n" "$repo"
+        printf "$color$icon$reset %s\n" "$repo"
     done
 }
 widget::ghq::select() {
