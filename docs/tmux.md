@@ -113,7 +113,8 @@ hjklで移動、大文字HJKLでリサイズ（Vim風）。
 | 名前変更 | `Prefix + ,` | プロンプトで入力 |
 | 左ウィンドウへ | `Prefix + Ctrl-H` | Prefix不要で連打可 |
 | 右ウィンドウへ | `Prefix + Ctrl-L` | 同上 |
-| 一覧表示 | `Prefix + w` | |
+| 番号で選択 | `Prefix + 0-9` | ステータスバーの番号 |
+| 一覧表示 | `Prefix + w` | FZF風に選択可能 |
 
 ### セッション操作
 
@@ -165,13 +166,27 @@ Ctrl-G → 同リポジトリの別worktree選択 → cdで移動
 
 ---
 
+## レイアウト操作
+
+| 操作 | キー | 備考 |
+|------|------|------|
+| 次のレイアウトに変更 | `Prefix + Space` | 連打で色々試せる |
+| 横並びで等分 | `Prefix + Alt-1` | even-horizontal |
+| 縦並びで等分 | `Prefix + Alt-2` | even-vertical |
+| メイン横＋サブ縦 | `Prefix + Alt-3` | main-horizontal |
+| メイン縦＋サブ横 | `Prefix + Alt-4` | main-vertical |
+| タイル状 | `Prefix + Alt-5` | tiled |
+
+**縦分割↔横分割を切り替えたい時:** `Prefix + Space` を何回か押す
+
+---
+
 ## 忘れがちだが重要なコマンド
 
 | 操作 | キー |
 |------|------|
 | ペイン→ウィンドウ化 | `Prefix + !` |
 | ペインの順序入れ替え | `Prefix + {` / `Prefix + }` |
-| 次のレイアウトに変更 | `Prefix + Space` |
 
 ---
 
@@ -226,3 +241,16 @@ tmux source-file ~/.tmux.conf
 
 設定ファイルで有効化済み（`set -g mouse on`）。
 効かない場合は設定再読み込みを試す。
+
+### 日本語入力中にキーバインドが効かない
+
+IME（日本語入力）がONだとCtrl-Sなどが効かない。
+
+**対処法:**
+1. **Escを押してからPrefix操作** - IMEがOFFになる
+2. **英数キーを押してから操作** - 確実にIME OFF
+3. **習慣づける** - tmux操作前に英数キーを押すクセをつける
+
+```
+日本語入力中 → 英数 → Ctrl-S → | (縦分割)
+```
