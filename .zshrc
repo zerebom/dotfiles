@@ -260,7 +260,12 @@ zstyle ':chpwd:*' recent-dirs-max 5000
 zstyle ':chpwd:*' recent-dirs-default yes
 zstyle ':completion:*' recent-dirs-insert both
 
-function chpwd() { ls } # cd後 自動ls
+# cd後に自動的にディレクトリ内容を表示
+auto-ls-after-cd() {
+    emulate -L zsh
+    eza -l -h --git --group --group-directories-first
+}
+add-zsh-hook chpwd auto-ls-after-cd
 
 # 拡張 glob を有効にする
 # 拡張 glob を有効にすると # ~ ^ もパターンとして扱われる

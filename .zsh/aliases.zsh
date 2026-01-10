@@ -10,7 +10,7 @@ alias so='source'
 alias be='bundle exec'
 alias ber='bundle exec ruby'
 
-alias ll='exa -l -h --git'
+alias ll='eza -l -h --git --group'
 alias lla='ll -a'
 
 # エイリアス: git 系
@@ -60,3 +60,6 @@ alias vidot='cd ~/.dotfiles|vim'
 alias -g @g="| ag"
 alias -g @l="| less"
 alias date='/usr/local/bin/gdate'
+
+# Claude Code
+alias cc='claude'
