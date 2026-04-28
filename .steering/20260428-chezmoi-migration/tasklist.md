@@ -1,0 +1,135 @@
+# タスクリスト — chezmoi 移行 + Brewfile/mas 統合
+
+実行は旧仕事PC `CMPC0113` で行う。新仕事PC `CMPC0397` での検証は Phase H。
+
+## Phase A: ブランチ作成と前準備
+
+- [x] `.steering/20260428-chezmoi-migration/{requirements,design,app-inventory}.md` 作成
+- [x] App Store ID 採番（`brew install mas && mas list`）
+- [x] cask 名確定（linear-linear / docker-desktop、CMake.app は cask 不在）
+- [ ] `git checkout -b feat/chezmoi-migration` で新ブランチ作成
+- [ ] 既存ファイルの漏れ確認（`git status` で未追跡ファイルが steering に紛れていないか）
+
+## Phase B: chezmoi 初期化
+
+- [ ] `brew install chezmoi` で chezmoi インストール
+- [ ] リポジトリ直下に `.chezmoiroot` 作成（中身: `home`）
+- [ ] `home/` ディレクトリ作成
+- [ ] `home/.chezmoi.toml.tmpl` 作成（hostType / isWork / email を `scutil` 経由で判定）
+- [ ] `home/.chezmoiignore` 作成（最小限：`README.md`, `LICENSE` 等）
+- [ ] `chezmoi init --apply=false --source=$HOME/.dotfiles` で初期化動作確認
+- [ ] `chezmoi data` でホスト分岐 data が正しく出力されるか確認
+
+## Phase C: dotfiles 取り込み
+
+### C-1. シェル系
+
+- [ ] `chezmoi add ~/.zshrc` → `home/dot_zshrc` を `dot_zshrc.tmpl` にリネーム
+- [ ] `chezmoi add ~/.zshenv` → 同様にテンプレ化
+- [ ] `chezmoi add ~/.zsh/` → `home/dot_zsh/` 作成
+  - [ ] `aliases.zsh`, `function.zsh`, `fzf.zsh`, `prompt.zsh_v2` はそのまま
+  - [ ] `exports.zsh` を `exports.zsh.tmpl` 化（シークレット部分を `keyring` 関数化、`env "CI"` ガード）
+- [ ] `home/dot_starship.toml` 配置（`.starship.toml` から）
+- [ ] `home/dot_tmux.conf` 配置（テンプレ化不要）
+
+### C-2. 設定ファイル系
+
+- [ ] `home/dot_config/ghostty/config.tmpl` 配置
+- [ ] `home/dot_config/karabiner/karabiner.json` を `~/.config/karabiner/` から取り込み
+- [ ] `home/dot_claude/CLAUDE.md` 作成（旧 `.claude/global.md` の内容）
+- [ ] `home/dot_gitconfig.tmpl` 作成（email を `{{ .email }}` で参照）
+
+### C-3. macOS キーバインド退避
+
+> current-state.md の調査により `defaults find NSUserKeyEquivalents` は **空** だったため、退避ファイル作成は不要。タスクスキップ。
+
+## Phase D: パッケージ管理（chezmoidata + run_onchange）
+
+- [ ] `home/.chezmoidata/packages.yaml` 作成（design.md のリスト転記）
+- [ ] `home/run_onchange_before_install-packages-darwin.sh.tmpl` 作成
+  - [ ] hash 行 `# packages hash: {{ .packages.darwin | toYaml | sha256sum }}` を冒頭に
+  - [ ] `cat <<EOF | brew bundle --file=/dev/stdin` 構造
+  - [ ] `.isWork` 分岐
+- [ ] `chezmoi execute-template < home/run_onchange_before_install-packages-darwin.sh.tmpl` で展開結果を目視確認
+- [ ] **dry-run**: 展開結果を `/tmp/Brewfile` に出して `brew bundle check --file=/tmp/Brewfile` でチェック
+
+## Phase E: アプリ個別の取り込みスクリプト
+
+- [ ] ~~`home/run_once_install-cmux.sh.tmpl` 作成~~ → cmux のビルド情報未取得のため保留。新PCで必要時に手動対応
+- [ ] `home/run_once_after_setup-nvim-symlink.sh.tmpl` 作成（`ln -sf ~/.dotfiles/nvim ~/.config/nvim`）
+- [ ] `home/run_onchange_install-vscode-extensions.sh.tmpl` 作成
+  - [ ] 旧PCで `code --list-extensions > /tmp/cursor-extensions.txt` を取得
+  - [ ] スクリプト本体は extensions.txt を読んで `code --install-extension` ループ
+
+## Phase F: シークレット投入と動作確認（旧PC）
+
+- [ ] keychain に投入
+  - [ ] `security add-generic-password -s github-token -a zerebom -w <new-token>`
+  - [ ] `security add-generic-password -s anthropic-api-key -a zerebom -w <key>` （他必要分）
+- [ ] `chezmoi diff` で生成結果と現状の差分を確認
+  - [ ] **意図したテンプレ展開差分のみ** か検証
+  - [ ] 意図しない差分があれば該当テンプレを修正
+- [ ] `chezmoi apply --dry-run --verbose` でエラーなし
+- [ ] **本番 apply**: `chezmoi apply` 実行（旧PCは現状維持の構成のはず）
+- [ ] `source ~/.zshrc` で再読込み、PATH や function が壊れていないか確認
+
+## Phase G: CI 整備
+
+- [ ] `.github/workflows/chezmoi-test.yml` 作成（matrix: ubuntu-latest, macos-latest）
+- [ ] `env.CI: "true"` で `exports.zsh.tmpl` のガードが効くこと
+- [ ] PR 上で CI が green になるまで調整
+- [ ] CI 不安定なら ubuntu-latest 単独に縮退（フォールバック発動）
+
+## Phase H: シークレット keychain 化（履歴剥離は不要）
+
+> current-state.md の調査により `.github_token` も `.zsh/secrets.zsh` も **git 履歴に存在しない** ことが判明（`.gitignore` 済み）。force push は不要。
+
+- [ ] GitHub 上で旧 `.github_token` の token を **revoke**
+- [ ] 新トークンを発行 → `security add-generic-password -s github-token -a zerebom -w <new-token>`
+- [ ] `GEMINI_API_KEY` を keychain へ移行 → `security add-generic-password -s gemini-api-key -a zerebom -w <key>`
+- [ ] `.zshenv.tmpl` から `source $HOME/.dotfiles/.github_token` の行を削除し、keyring 取得式に置換
+- [ ] `.zsh/secrets.zsh` を `dot_zsh/secrets.zsh.tmpl` 化、keyring 経由に置換
+- [ ] cutover 時にローカルの `.github_token` / `.zsh/secrets.zsh` を削除（chezmoi 適用で空相当に置換される）
+
+## Phase I: 新PC `CMPC0397` での検証（30分タイマー）
+
+- [ ] 新PC受領時の初期セットアップ（Apple ID ログイン、iCloud 同期等）
+- [ ] **計測開始**
+- [ ] `xcode-select --install`
+- [ ] Homebrew インストール（公式 install.sh）
+- [ ] `eval "$(/opt/homebrew/bin/brew shellenv)"` を `~/.zprofile` に追記
+- [ ] `brew install chezmoi`
+- [ ] keychain にシークレット投入（USB or AirDrop で運搬した bootstrap スクリプト）
+- [ ] `chezmoi init zerebom --apply` 実行 → 5分以内に dotfiles 展開完了
+- [ ] パッケージ自動インストール完了確認（`run_onchange_before_install-packages-darwin.sh.tmpl` が走る）
+- [ ] **計測終了** — 30分以内に Cursor / Ghostty / Karabiner 起動確認
+- [ ] `mas list` で AppStore 6個揃っていること
+- [ ] `git grep -i 'token\|secret\|password' -- ':!.steering' ':!docs'` でシークレット平文出ない
+
+## Phase J: cutover（master 切替）
+
+- [ ] PR `feat/chezmoi-migration` → `master` を作成
+- [ ] CI green を確認
+- [ ] PR レビュー（自分自身）
+  - [ ] requirements.md / design.md と乖離がないか
+  - [ ] 不要ファイル（`.zshrc.backup.*`, `.vim.bak`, `nvim.bak`）の削除を含むか
+- [ ] `Makefile` の install/clean ターゲットを **chezmoi コマンドのラッパ** に書き換え（`make install` で `chezmoi apply` を叩く等）、または完全削除
+- [ ] PR merge
+- [ ] 旧 symlink を `chezmoi managed` で確認、不整合あれば手動整理
+
+## Phase K: ドキュメント整備
+
+- [ ] `docs/chezmoi.md` 作成（新PC初期化手順、トラブルシューティング、シークレット投入手順）
+- [ ] `README.md` を chezmoi 前提に書き換え
+- [ ] `CLAUDE.md`（プロジェクトの指示書）を chezmoi 前提に更新
+- [ ] `docs/cmux.md`, `docs/nvim.md`, `docs/tmux.md` で chezmoi に関連するパスがあれば修正
+
+---
+
+## 実装後の振り返り
+
+<!-- 完了後に記入 -->
+- 実装完了日:
+- 計画と実績の差分:
+- 学んだこと:
+- 次回への改善提案:
