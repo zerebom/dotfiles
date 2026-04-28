@@ -41,29 +41,31 @@
 - [x] `home/dot_config/ghostty/config` 配置（テンプレ化は将来必要時）
 - [x] `home/dot_config/karabiner/private_karabiner.json` 取り込み（mode 0600 維持）
 - [x] `home/dot_claude/CLAUDE.md` 作成（旧 `.claude/global.md` の内容）
-- [ ] `home/dot_gitconfig.tmpl` 作成（要対応 — 既存 `~/.gitconfig` を取り込み + email を `{{ .email }}` で参照）
+- [x] `home/dot_gitconfig.tmpl` 作成（既存 `~/.gitconfig` 取り込み、email を `{{ .email }}` で展開、excludesfile を `{{ .chezmoi.homeDir }}/.gitignore_global` で展開）
+- [x] `home/dot_gitignore_global` 取り込み（実体ファイル `~/.gitignore_global` を chezmoi 管理下へ）
 
 ### C-3. macOS キーバインド退避
 
 > current-state.md の調査により `defaults find NSUserKeyEquivalents` は **空** だったため、退避ファイル作成は不要。タスクスキップ。
 
-## Phase D: パッケージ管理（chezmoidata + run_onchange）
+## Phase D: パッケージ管理（chezmoidata + run_onchange）✅
 
-- [ ] `home/.chezmoidata/packages.yaml` 作成（design.md のリスト転記）
-- [ ] `home/run_onchange_before_install-packages-darwin.sh.tmpl` 作成
-  - [ ] hash 行 `# packages hash: {{ .packages.darwin | toYaml | sha256sum }}` を冒頭に
-  - [ ] `cat <<EOF | brew bundle --file=/dev/stdin` 構造
-  - [ ] `.isWork` 分岐
-- [ ] `chezmoi execute-template < home/run_onchange_before_install-packages-darwin.sh.tmpl` で展開結果を目視確認
-- [ ] **dry-run**: 展開結果を `/tmp/Brewfile` に出して `brew bundle check --file=/tmp/Brewfile` でチェック
+- [x] `home/.chezmoidata/packages.yaml` 作成（design.md のリスト転記、common.brews 30 + common.casks 26 + work.casks 7 + work.mas 6）
+- [x] `home/run_onchange_before_install-packages-darwin.sh.tmpl` 作成
+  - [x] hash 行 `# packages hash: {{ .packages.darwin | toYaml | sha256sum }}` を冒頭に
+  - [x] `cat <<EOF | brew bundle --file=/dev/stdin` 構造
+  - [x] `.isWork` 分岐
+- [x] `chezmoi execute-template` で `isWork: true` 時に work casks/mas が含まれる Brewfile が展開されることを確認
+- [ ] **dry-run**: 展開結果を `/tmp/Brewfile` に出して `brew bundle check --file=/tmp/Brewfile` でチェック（Phase F の事前確認として実行）
 
-## Phase E: アプリ個別の取り込みスクリプト
+## Phase E: アプリ個別の取り込みスクリプト ✅
 
 - [ ] ~~`home/run_once_install-cmux.sh.tmpl` 作成~~ → cmux のビルド情報未取得のため保留。新PCで必要時に手動対応
-- [ ] `home/run_once_after_setup-nvim-symlink.sh.tmpl` 作成（`ln -sf ~/.dotfiles/nvim ~/.config/nvim`）
-- [ ] `home/run_onchange_install-vscode-extensions.sh.tmpl` 作成
-  - [ ] 旧PCで `code --list-extensions > /tmp/cursor-extensions.txt` を取得
-  - [ ] スクリプト本体は extensions.txt を読んで `code --install-extension` ループ
+- [x] `home/run_once_after_setup-nvim-symlink.sh.tmpl` 作成（`{{ .chezmoi.workingTree }}/nvim` → `~/.config/nvim` を symlink、既存symlink整合チェック付き）
+- [x] `home/run_onchange_install-cursor-extensions.sh.tmpl` 作成（`.assets/cursor-extensions.txt` を読み `cursor --install-extension --force` ループ、CLI未導入時はスキップ）
+- [x] `home/run_onchange_install-vscode-extensions.sh.tmpl` 作成（同上で `code` CLI 利用）
+- [x] `home/.assets/cursor-extensions.txt`（137行）と `vscode-extensions.txt`（125行）配置
+- [x] `home/.chezmoiignore` に `.assets/**` を追加してターゲット展開から除外
 
 ## Phase F: シークレット投入と動作確認（旧PC）
 

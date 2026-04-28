@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+set -euo pipefail
+
+# packages hash: {{ .packages.darwin | toYaml | sha256sum }}
+
+cat <<'EOF' | brew bundle --file=/dev/stdin
+{{- range .packages.darwin.common.brews }}
+brew "{{ . }}"
+{{- end }}
+{{- range .packages.darwin.common.casks }}
+cask "{{ . }}"
+{{- end }}
+{{- if .isWork }}
+{{- range .packages.darwin.work.casks }}
+cask "{{ . }}"
+{{- end }}
+{{- range .packages.darwin.work.mas }}
+mas "{{ .name }}", id: {{ .id }}
+{{- end }}
+{{- end }}
+EOF
+{{- end }}

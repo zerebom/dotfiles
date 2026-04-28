@@ -1,6 +1,9 @@
 README.md
 LICENSE
 
+{{/* スクリプトから参照する静的ファイル置き場（ターゲット展開しない） */}}
+.assets/**
+
 {{- if ne .chezmoi.os "darwin" }}
 {{/* macOS 限定ファイルを Linux 等で無視する */}}
 private_dot_macos-shortcuts.txt

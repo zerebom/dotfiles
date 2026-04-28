@@ -1,0 +1,78 @@
+packages:
+  darwin:
+    common:
+      brews:
+        - git
+        - gh
+        - ghq
+        - fd
+        - ripgrep
+        - bat
+        - eza
+        - jq
+        - yq
+        - jnv
+        - neovim
+        - tmux
+        - reattach-to-user-namespace
+        - starship
+        - zoxide
+        - atuin
+        - direnv
+        - gnupg
+        - pinentry-mac
+        - pyenv
+        - uv
+        - fnm
+        - deno
+        - duckdb
+        - ffmpeg
+        - graphviz
+        - pandoc
+        - tree
+        - wget
+        - mas
+      casks:
+        - ghostty
+        - google-chrome
+        - raycast
+        - karabiner-elements
+        - cleanshot
+        - obsidian
+        - cursor
+        - visual-studio-code
+        - claude
+        - chatgpt
+        - spotify
+        - autoraise
+        - monitorcontrol
+        - showyedge
+        - amical
+        - skitch
+        - warp
+        - drawio
+        - figma
+        - miro
+        - todoist
+        - notion
+        - tableplus
+        - postman
+        - font-plemol-jp-nf
+    work:
+      casks:
+        - slack
+        - discord
+        - zoom
+        - linear-linear
+        - docker-desktop
+        - mactex-no-gui
+        - wkhtmltopdf
+      mas:
+        - { name: Bitwarden,       id: 1352778147 }
+        - { name: Keynote,         id: 409183694 }
+        - { name: Microsoft Excel, id: 462058435 }
+        - { name: RunCat,          id: 1429033973 }
+        - { name: Sequel Ace,      id: 1518036000 }
+        - { name: Tailscale,       id: 1475387142 }
+    personal:
+      # 個人Macで使うアプリは将来追記
