@@ -1,0 +1,53 @@
+name: chezmoi-test
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master, "feat/chezmoi-migration"]
+
+env:
+  CI: "true"
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/bin"
+
+      - name: Add chezmoi to PATH
+        run: echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: chezmoi version
+        run: chezmoi --version
+
+      - name: Initialize (no apply)
+        run: chezmoi init --apply=false --source="$GITHUB_WORKSPACE/home"
+
+      - name: chezmoi data
+        run: chezmoi data --source="$GITHUB_WORKSPACE/home"
+
+      - name: Template syntax check (all .tmpl files)
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail=0
+          while IFS= read -r f; do
+            echo "::group::execute-template $f"
+            if ! chezmoi execute-template --source="$GITHUB_WORKSPACE/home" < "$f" > /dev/null; then
+              echo "::error file=$f::template execution failed"
+              fail=1
+            fi
+            echo "::endgroup::"
+          done < <(find "$GITHUB_WORKSPACE/home" -type f -name '*.tmpl' ! -name '.chezmoi.toml.tmpl')
+          exit $fail
+
+      - name: Apply dry-run
+        run: chezmoi apply --dry-run --verbose --force --source="$GITHUB_WORKSPACE/home"

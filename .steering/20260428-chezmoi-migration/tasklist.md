@@ -79,12 +79,19 @@
 - [ ] **本番 apply**: `chezmoi apply` 実行（旧PCは現状維持の構成のはず）
 - [ ] `source ~/.zshrc` で再読込み、PATH や function が壊れていないか確認
 
-## Phase G: CI 整備
+## Phase G: CI 整備 ✅（ローカル検証まで）
 
-- [ ] `.github/workflows/chezmoi-test.yml` 作成（matrix: ubuntu-latest, macos-latest）
-- [ ] `env.CI: "true"` で `exports.zsh.tmpl` のガードが効くこと
-- [ ] PR 上で CI が green になるまで調整
+- [x] `.github/workflows/chezmoi-test.yml` 作成（matrix: ubuntu-latest, macos-latest）
+  - `env.CI: "true"` を job レベルで設定
+  - `chezmoi init --apply=false`、全 `*.tmpl` の execute-template、`apply --dry-run --force --verbose` の3段
+- [x] ローカルで CI 相当を再現: `CI=true chezmoi apply --dry-run --force` が exit 0
+- [x] `secrets.zsh.tmpl` の `env "CI"` ガードが効くことをローカルで確認（fake 値展開）
+- [ ] 実際の PR 上で CI が green になるまで調整（push 後に確認）
 - [ ] CI 不安定なら ubuntu-latest 単独に縮退（フォールバック発動）
+
+### `dot_zsh/secrets.zsh.tmpl` 堅牢化 ✅
+
+未投入の keychain エントリでも展開エラーにならないよう、`keyring` 関数から `output "sh" "-c" "security find-generic-password ... 2>/dev/null || true"` 方式へ変更。投入があれば値、無ければ空文字。
 
 ## Phase H: シークレット keychain 化（履歴剥離は不要）
 
