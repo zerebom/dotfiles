@@ -104,19 +104,18 @@
 - [ ] `.zsh/secrets.zsh` を `dot_zsh/secrets.zsh.tmpl` 化、keyring 経由に置換
 - [ ] cutover 時にローカルの `.github_token` / `.zsh/secrets.zsh` を削除（chezmoi 適用で空相当に置換される）
 
-## Phase I: 新PC `CMPC0397` での検証（30分タイマー）
+## Phase I: 新PC `CMPC0397` での検証 ✅（2026-04-29 実施）
 
-- [ ] 新PC受領時の初期セットアップ（Apple ID ログイン、iCloud 同期等）
-- [ ] **計測開始**
-- [ ] `xcode-select --install`
-- [ ] Homebrew インストール（公式 install.sh）
-- [ ] `eval "$(/opt/homebrew/bin/brew shellenv)"` を `~/.zprofile` に追記
-- [ ] `brew install chezmoi`
-- [ ] keychain にシークレット投入（USB or AirDrop で運搬した bootstrap スクリプト）
-- [ ] `chezmoi init zerebom --apply` 実行 → 5分以内に dotfiles 展開完了
-- [ ] パッケージ自動インストール完了確認（`run_onchange_before_install-packages-darwin.sh.tmpl` が走る）
-- [ ] **計測終了** — 30分以内に Cursor / Ghostty / Karabiner 起動確認
-- [ ] `mas list` で AppStore 6個揃っていること
+- [x] Xcode CLT 確認（既に `/Library/Developer/CommandLineTools` にあり）
+- [x] Homebrew + chezmoi インストール
+- [x] `chezmoi init --source=$HOME/.dotfiles` でホスト判定（→ `work-new` / `higuchi.kokoro@commune.co.jp`）
+- [x] `~/.local/share/chezmoi` を `~/.dotfiles` に symlink して source-state 共有
+- [x] `chezmoi apply --force` 実行（4回の試行で完了。失敗許容化のためスクリプトを修正、コミット `8270171`）
+- [x] dotfiles 24 ターゲット全配置、`chezmoi diff` clean
+- [x] brews 30/30、casks 25/29、cursor ext 106/137、vscode ext 125/125、nvim symlink 確認
+- [ ] **残**: sudo 必須 cask 3 個（karabiner-elements / zoom / docker-desktop）を対話シェルで手動 install
+- [ ] **残**: App Store サインイン → mas 6 個（Bitwarden / Keynote / Excel / RunCat / Sequel Ace / Tailscale）
+- [ ] **任意**: keychain にシークレット投入（github-token / gemini-api-key / anthropic-api-key）
 - [ ] `git grep -i 'token\|secret\|password' -- ':!.steering' ':!docs'` でシークレット平文出ない
 
 ## Phase J: cutover（master 切替）
