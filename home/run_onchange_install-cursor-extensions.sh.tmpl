@@ -10,12 +10,16 @@ fi
 
 LIST="{{ .chezmoi.sourceDir }}/.assets/cursor-extensions.txt"
 
+failed=()
 while IFS= read -r ext; do
   [ -z "${ext}" ] && continue
   case "${ext}" in
     \#*) continue ;;
   esac
-  cursor --install-extension "${ext}" --force >/dev/null
+  cursor --install-extension "${ext}" --force >/dev/null 2>&1 || failed+=("${ext}")
 done < "${LIST}"
 
+if [ ${#failed[@]} -gt 0 ]; then
+  echo "cursor extensions: ${#failed[@]} failed (renamed/removed from marketplace?): ${failed[*]}"
+fi
 echo "cursor extensions sync complete"

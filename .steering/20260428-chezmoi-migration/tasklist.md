@@ -56,7 +56,7 @@
   - [x] `cat <<EOF | brew bundle --file=/dev/stdin` 構造
   - [x] `.isWork` 分岐
 - [x] `chezmoi execute-template` で `isWork: true` 時に work casks/mas が含まれる Brewfile が展開されることを確認
-- [ ] **dry-run**: 展開結果を `/tmp/Brewfile` に出して `brew bundle check --file=/tmp/Brewfile` でチェック（Phase F の事前確認として実行）
+- [x] **dry-run**: 展開結果を `/tmp/Brewfile` に出して `brew bundle check --file=/tmp/Brewfile` でチェック（Phase F の事前確認として実行）— CMPC0397 で実施、68行（brew 30 / cask 32 / mas 6）展開、syntax OK、check は「未インストール多数」（フレッシュPCなので想定通り）
 
 ## Phase E: アプリ個別の取り込みスクリプト ✅
 

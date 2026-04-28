@@ -1,3 +1,8 @@
+# Homebrew に無い / 重いため packages.yaml から除外（必要時に手動インストール）:
+#   - autoraise     : github.com/sbmpost/AutoRaise を手動ビルド
+#   - skitch        : Evernote が配布終了。代替は CleanShot / Shottr
+#   - wkhtmltopdf   : 本家アーカイブ (2023)、tap も無し。weasyprint 等の代替を検討
+#   - mactex-no-gui : 5GB。LaTeX が必要になったら `brew install --cask mactex-no-gui`
 packages:
   darwin:
     common:
@@ -44,11 +49,9 @@ packages:
         - claude
         - chatgpt
         - spotify
-        - autoraise
         - monitorcontrol
         - showyedge
         - amical
-        - skitch
         - warp
         - drawio
         - figma
@@ -65,8 +68,6 @@ packages:
         - zoom
         - linear-linear
         - docker-desktop
-        - mactex-no-gui
-        - wkhtmltopdf
       mas:
         - { name: Bitwarden,       id: 1352778147 }
         - { name: Keynote,         id: 409183694 }
