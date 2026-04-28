@@ -1,0 +1,8 @@
+README.md
+LICENSE
+
+{{- if ne .chezmoi.os "darwin" }}
+{{/* macOS 限定ファイルを Linux 等で無視する */}}
+private_dot_macos-shortcuts.txt
+run_onchange_before_install-packages-darwin.sh
+{{- end }}
