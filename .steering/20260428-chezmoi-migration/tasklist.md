@@ -2,42 +2,46 @@
 
 実行は旧仕事PC `CMPC0113` で行う。新仕事PC `CMPC0397` での検証は Phase H。
 
-## Phase A: ブランチ作成と前準備
+## Phase A: ブランチ作成と前準備 ✅
 
-- [x] `.steering/20260428-chezmoi-migration/{requirements,design,app-inventory}.md` 作成
+- [x] `.steering/20260428-chezmoi-migration/{requirements,design,app-inventory,current-state}.md` 作成
 - [x] App Store ID 採番（`brew install mas && mas list`）
 - [x] cask 名確定（linear-linear / docker-desktop、CMake.app は cask 不在）
-- [ ] `git checkout -b feat/chezmoi-migration` で新ブランチ作成
-- [ ] 既存ファイルの漏れ確認（`git status` で未追跡ファイルが steering に紛れていないか）
+- [x] `git checkout -b feat/chezmoi-migration` で新ブランチ作成
+- [x] 既存ファイルの漏れ確認（`git status` で未追跡ファイルが steering に紛れていないか）
+- [x] commit: `docs(steering): add chezmoi migration steering docs`
 
-## Phase B: chezmoi 初期化
+## Phase B: chezmoi 初期化 ✅
 
-- [ ] `brew install chezmoi` で chezmoi インストール
-- [ ] リポジトリ直下に `.chezmoiroot` 作成（中身: `home`）
-- [ ] `home/` ディレクトリ作成
-- [ ] `home/.chezmoi.toml.tmpl` 作成（hostType / isWork / email を `scutil` 経由で判定）
-- [ ] `home/.chezmoiignore` 作成（最小限：`README.md`, `LICENSE` 等）
-- [ ] `chezmoi init --apply=false --source=$HOME/.dotfiles` で初期化動作確認
-- [ ] `chezmoi data` でホスト分岐 data が正しく出力されるか確認
+- [x] `brew install chezmoi` で chezmoi インストール（v2.70.2）
+- [x] リポジトリ直下に `.chezmoiroot` 作成（中身: `home`）
+- [x] `home/` ディレクトリ作成
+- [x] `home/.chezmoi.toml.tmpl` 作成（hostType / isWork / email を `scutil` 経由で判定）
+- [x] `home/.chezmoiignore` 作成（README.md, LICENSE, Linux で macOS 限定ファイル除外）
+- [x] `chezmoi init --apply=false --source=$HOME/.dotfiles` で初期化動作確認
+- [x] `chezmoi data` でホスト分岐 data が正しく出力されるか確認
+  - `computerName: "CMPC0113"`, `hostType: "work-old"`, `isWork: true`, `email: higuchi.kokoro@commune.co.jp`
 
-## Phase C: dotfiles 取り込み
+## Phase C: dotfiles 取り込み ✅
 
-### C-1. シェル系
+### C-1. シェル系 ✅
 
-- [ ] `chezmoi add ~/.zshrc` → `home/dot_zshrc` を `dot_zshrc.tmpl` にリネーム
-- [ ] `chezmoi add ~/.zshenv` → 同様にテンプレ化
-- [ ] `chezmoi add ~/.zsh/` → `home/dot_zsh/` 作成
-  - [ ] `aliases.zsh`, `function.zsh`, `fzf.zsh`, `prompt.zsh_v2` はそのまま
-  - [ ] `exports.zsh` を `exports.zsh.tmpl` 化（シークレット部分を `keyring` 関数化、`env "CI"` ガード）
-- [ ] `home/dot_starship.toml` 配置（`.starship.toml` から）
-- [ ] `home/dot_tmux.conf` 配置（テンプレ化不要）
+- [x] `home/dot_zshrc`（テンプレ化不要、現状そのまま）
+- [x] `home/dot_zshenv.tmpl`（Apple Silicon 用 `/opt/homebrew` 分岐、`.github_token` source 行削除）
+- [x] `home/dot_zsh/` 作成
+  - [x] `aliases.zsh`, `function.zsh`, `prompt.zsh_v2` はそのまま
+  - [x] `empty_fzf.zsh`（0byte ファイルの chezmoi 規約）
+  - [x] `exports.zsh` はそのまま（シークレットなし、PATH のみ）
+  - [x] `secrets.zsh.tmpl` 新規作成（`keyring` + `env "CI"` ガード）
+- [x] `home/dot_starship.toml` 配置
+- [x] `home/dot_tmux.conf` 配置
 
-### C-2. 設定ファイル系
+### C-2. 設定ファイル系 ✅
 
-- [ ] `home/dot_config/ghostty/config.tmpl` 配置
-- [ ] `home/dot_config/karabiner/karabiner.json` を `~/.config/karabiner/` から取り込み
-- [ ] `home/dot_claude/CLAUDE.md` 作成（旧 `.claude/global.md` の内容）
-- [ ] `home/dot_gitconfig.tmpl` 作成（email を `{{ .email }}` で参照）
+- [x] `home/dot_config/ghostty/config` 配置（テンプレ化は将来必要時）
+- [x] `home/dot_config/karabiner/private_karabiner.json` 取り込み（mode 0600 維持）
+- [x] `home/dot_claude/CLAUDE.md` 作成（旧 `.claude/global.md` の内容）
+- [ ] `home/dot_gitconfig.tmpl` 作成（要対応 — 既存 `~/.gitconfig` を取り込み + email を `{{ .email }}` で参照）
 
 ### C-3. macOS キーバインド退避
 
