@@ -132,10 +132,15 @@
 
 ## Phase K: ドキュメント整備
 
-- [ ] `docs/chezmoi.md` 作成（新PC初期化手順、トラブルシューティング、シークレット投入手順）
-- [ ] `README.md` を chezmoi 前提に書き換え
-- [ ] `CLAUDE.md`（プロジェクトの指示書）を chezmoi 前提に更新
+- [x] `docs/chezmoi.md` 作成（30分タイマー手順 / シークレット投入 / 日常運用 / トラブルシューティング）
+- [ ] `README.md` を chezmoi 前提に書き換え（cutover タイミングで実施）
+- [ ] `CLAUDE.md`（プロジェクトの指示書）を chezmoi 前提に更新（cutover タイミングで実施）
 - [ ] `docs/cmux.md`, `docs/nvim.md`, `docs/tmux.md` で chezmoi に関連するパスがあれば修正
+
+## おまけ: ハウスキーピング（CI で発覚）
+
+- [x] `.zsh/anyframe` の submodule 残骸を index から除去（`.gitmodules` 不在で `actions/checkout` が exit 128 を吐いていた）
+- [x] `actions/checkout@v4` → `@v5` バンプ（chezmoi-test.yml + claude.yml、Node.js 20 deprecation 対応）
 
 ---
 
