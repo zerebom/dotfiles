@@ -13,55 +13,55 @@ macos:
     - domain: "-g"
       key: "KeyRepeat"
       type: "-int"
-      value: null
+      value: 2
       note: "リピート速度。小さいほど高速。1=最速、デフォルト=6"
     - domain: "-g"
       key: "InitialKeyRepeat"
       type: "-int"
-      value: null
+      value: 15
       note: "リピート開始までのディレイ。小さいほど早く開始。デフォルト=68"
     - domain: "-g"
       key: "ApplePressAndHoldEnabled"
       type: "-bool"
-      value: null
+      value: false
       note: "false にするとリピート優先（press-and-hold メニュー無効）"
     - domain: "-g"
       key: "AppleKeyboardUIMode"
       type: "-int"
-      value: null
+      value: 0
       note: "Tab で全コントロール移動可（=2 or 3）"
 
     # ── Trackpad / Mouse ─────────────────────────────────────
     - domain: "-g"
       key: "com.apple.swipescrolldirection"
       type: "-bool"
-      value: null
+      value: false
       note: "ナチュラルスクロール方向（true=ナチュラル）"
     - domain: "com.apple.AppleMultitouchTrackpad"
       key: "Clicking"
       type: "-bool"
-      value: null
+      value: true
       note: "タップでクリック"
     - domain: "com.apple.AppleMultitouchTrackpad"
       key: "TrackpadThreeFingerDrag"
       type: "-bool"
-      value: null
+      value: false
       note: "3本指ドラッグ"
 
     # ── Dock ─────────────────────────────────────────────────
     - domain: "com.apple.dock"
       key: "orientation"
       type: "-string"
-      value: null
+      value: "left"
       note: "left / bottom / right"
     - domain: "com.apple.dock"
       key: "autohide"
       type: "-bool"
-      value: null
+      value: true
     - domain: "com.apple.dock"
       key: "tilesize"
       type: "-int"
-      value: null
+      value: 59
     - domain: "com.apple.dock"
       key: "show-recents"
       type: "-bool"
@@ -93,7 +93,7 @@ macos:
     - domain: "-g"
       key: "NSAutomaticCapitalizationEnabled"
       type: "-bool"
-      value: null
+      value: false
     - domain: "-g"
       key: "NSAutomaticDashSubstitutionEnabled"
       type: "-bool"
@@ -101,7 +101,7 @@ macos:
     - domain: "-g"
       key: "NSAutomaticPeriodSubstitutionEnabled"
       type: "-bool"
-      value: null
+      value: false
     - domain: "-g"
       key: "NSAutomaticQuoteSubstitutionEnabled"
       type: "-bool"
@@ -109,13 +109,13 @@ macos:
     - domain: "-g"
       key: "NSAutomaticSpellingCorrectionEnabled"
       type: "-bool"
-      value: null
+      value: false
 
     # ── Screenshots ──────────────────────────────────────────
     - domain: "com.apple.screencapture"
       key: "location"
       type: "-string"
-      value: null
+      value: "~/ScreenShot"
       note: "保存先パス"
     - domain: "com.apple.screencapture"
       key: "type"
