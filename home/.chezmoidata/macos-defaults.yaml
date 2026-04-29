@@ -126,3 +126,28 @@ macos:
       key: "disable-shadow"
       type: "-bool"
       value: null
+
+    # ── Hot Corners ──────────────────────────────────────────
+    # 0=なし 2=Mission Control 3=アプリケーションウィンドウ 4=デスクトップ 5=スクリーンセーバー起動
+    # 6=スクリーンセーバー無効 7=Dashboard 10=ディスプレイをスリープ 11=Launchpad 12=通知センター
+    # 13=ロック画面 14=クイックメモ
+    - domain: "com.apple.dock"
+      key: "wvous-tl-corner"
+      type: "-int"
+      value: null
+    - domain: "com.apple.dock"
+      key: "wvous-tr-corner"
+      type: "-int"
+      value: null
+    - domain: "com.apple.dock"
+      key: "wvous-bl-corner"
+      type: "-int"
+      value: null
+    - domain: "com.apple.dock"
+      key: "wvous-br-corner"
+      type: "-int"
+      value: null
+
+    # ── Spotlight ────────────────────────────────────────────
+    # orderedItems は array なので個別 key/value では表現できない。
+    # 別途 defaults export com.apple.Spotlight で plist に出して home/.assets/spotlight.plist として commit する形を推奨。

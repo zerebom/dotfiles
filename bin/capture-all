@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# 全 capture スクリプトを順に実行。旧PC（または「設定が最新の」PC）で叩く想定。
+# 個別で失敗しても他は続行。
+
+set -uo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+run() {
+  local script="$1"
+  printf '\n=== %s ===\n' "$(basename "$script")"
+  if ! "$script"; then
+    echo "  ↑ FAILED（スキップして続行）"
+  fi
+}
+
+run "$REPO_ROOT/bin/capture-macos-defaults"
+run "$REPO_ROOT/bin/capture-cursor"
+run "$REPO_ROOT/bin/capture-claude"
+run "$REPO_ROOT/bin/capture-ssh"
+run "$REPO_ROOT/bin/capture-dock"
+run "$REPO_ROOT/bin/capture-login-items"
+run "$REPO_ROOT/bin/capture-ghq"
+
+echo ""
+echo "=== summary ==="
+cd "$REPO_ROOT"
+git status -s home/ 2>&1 | head -30
+echo ""
+echo "差分を確認したら:"
+echo "  cd $REPO_ROOT"
+echo "  git diff home/"
+echo "  git commit -am 'chore: refresh captures from \$(scutil --get ComputerName)'"
+echo "  git push"

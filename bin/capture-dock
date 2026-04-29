@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Dock の設定（pinned apps の順序など）を home/.assets/dock.plist に書き出す。
+# 復元は run_onchange_after_apply-dock.sh.tmpl が defaults import で行う。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$REPO_ROOT/home/.assets/dock.plist"
+
+mkdir -p "$(dirname "$OUT")"
+
+defaults export com.apple.dock "$OUT"
+echo "captured Dock: $OUT ($(wc -c < "$OUT") bytes)"

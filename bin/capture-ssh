@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# ~/.ssh/config を home/private_dot_ssh/config にコピー。
+# 鍵（id_*）と known_hosts は除外。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SRC="$HOME/.ssh/config"
+DST_DIR="$REPO_ROOT/home/private_dot_ssh"
+DST="$DST_DIR/config"
+
+if [ ! -f "$SRC" ]; then
+  echo "$SRC が存在しないのでスキップ"
+  exit 0
+fi
+
+mkdir -p "$DST_DIR"
+cp -p "$SRC" "$DST"
+chmod 600 "$DST"
+echo "captured SSH config: $DST ($(wc -l < "$DST" | tr -d ' ') lines)"
