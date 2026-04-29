@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+{{- $plist := joinPath .chezmoi.sourceDir ".assets/text-replacements.plist" -}}
+{{- if stat $plist }}
+set -euo pipefail
+
+# text-replacements hash: {{ include ".assets/text-replacements.plist" | sha256sum }}
+
+PLIST="{{ $plist }}"
+
+if [ ! -f "$PLIST" ]; then
+  echo "text-replacements.plist not found, skip"
+  exit 0
+fi
+
+echo "==> applying Text Replacements / ユーザ辞書"
+
+# 既存キーを一旦削除して上書き（PlistBuddy で array を直接置換）
+PB="/usr/libexec/PlistBuddy"
+TARGET="$HOME/Library/Preferences/.GlobalPreferences.plist"
+
+"$PB" -c "Delete :NSUserDictionaryReplacementItems" "$TARGET" 2>/dev/null || true
+"$PB" -c "Add :NSUserDictionaryReplacementItems array" "$TARGET"
+
+# .assets/text-replacements.plist は <plist><array>...</array></plist> の構造。
+# ここから <dict>...</dict> 単位で取り出して PlistBuddy に流し込む。
+# Python で plist を読み、各 dict を Add で追加するのが堅い。
+
+/usr/bin/env python3 - "$PLIST" "$TARGET" <<'PY'
+import plistlib
+import subprocess
+import sys
+from pathlib import Path
+
+src = Path(sys.argv[1])
+target = sys.argv[2]
+items = plistlib.loads(src.read_bytes())
+PB = "/usr/libexec/PlistBuddy"
+
+if not isinstance(items, list):
+    print("ERROR: source plist is not an array", file=sys.stderr)
+    sys.exit(1)
+
+added = 0
+for i, item in enumerate(items):
+    base = f":NSUserDictionaryReplacementItems:{i}"
+    subprocess.run([PB, "-c", f"Add {base} dict", target], check=False)
+    for key, val in item.items():
+        if isinstance(val, bool):
+            t, v = "bool", "true" if val else "false"
+        elif isinstance(val, int):
+            t, v = "integer", str(val)
+        elif isinstance(val, str):
+            t, v = "string", val
+        else:
+            continue
+        subprocess.run([PB, "-c", f"Add {base}:{key} {t} {v}", target], check=False)
+    added += 1
+
+print(f"Text Replacements: applied={added}")
+PY
+
+# ロケール再読込（cfprefsd を kill）
+killall cfprefsd 2>/dev/null || true
+{{- else }}
+echo "no .assets/text-replacements.plist (capture-text-replacements 未実行 or 旧PC で push 待ち)"
+{{- end }}
+{{- end }}
