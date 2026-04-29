@@ -17,6 +17,7 @@ dotfile（chezmoi 管理）で完結しない macOS 個別設定 / アプリ独�
 | **Login Items（自動起動アプリ）** | osascript で list → YAML、apply で再構築 | ✅ |
 | **ghq クローン済みリポ一覧** | `ghq list` → txt、apply で `xargs ghq get` | ✅ |
 | **Text Replacements / 日本語IMEユーザ辞書** | `plutil -extract NSUserDictionaryReplacementItems` で plist 化、apply で PlistBuddy 経由で書き戻し | ✅ |
+| **AppleSymbolicHotKeys**（Spotlight Cmd+Space 無効化など） | `defaults export com.apple.symbolichotkeys` で plist、apply で `defaults import` | ✅ |
 | **Raycast** | アプリの Export/Import（`.rayconfig` を commit） | ✅（手動 GUI） |
 | 秘密鍵 / GPG / AWS / GCP creds | keychain or 1Password（commit しない） | ❌ 別管理 |
 | iCloud 同期物（Cursor account, Obsidian Vault） | 諦める（アプリ任せ） | ❌ |
@@ -40,6 +41,7 @@ make capture-dock        # Dock plist
 make capture-login-items # Login Items YAML
 make capture-ghq         # ghq list
 make capture-text-replacements # Text Replacements / 日本語IMEユーザ辞書
+make capture-symbolichotkeys   # システムホットキー全般（Spotlight 無効化など）
 
 # 差分確認 → commit & push
 git diff home/
@@ -74,6 +76,7 @@ make raycast-import
 - Dock plist の import（`run_onchange_after_apply-dock.sh`）
 - Login Items の再構築（`run_onchange_after_apply-login-items.sh`）
 - Text Replacements / ユーザ辞書の再構築（`run_onchange_after_apply-text-replacements.sh`）
+- システムホットキーの再構築（`run_onchange_after_apply-symbolichotkeys.sh`、Spotlight 無効化＋Raycast 再起動）
 - ghq の一括 clone（`run_once_after_clone-ghq-repos.sh`、初回のみ）
 - Cursor / Claude のファイルが配置される（chezmoi 直接管理）
 

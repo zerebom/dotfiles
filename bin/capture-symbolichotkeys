@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# AppleSymbolicHotKeys（Spotlight・Mission Control・Dock 表示などの
+# システム標準ホットキー全般）を home/.assets/symbolichotkeys.plist に書き出す。
+#
+# 復元は run_onchange_after_apply-symbolichotkeys.sh.tmpl が defaults import で行う。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$REPO_ROOT/home/.assets/symbolichotkeys.plist"
+
+mkdir -p "$(dirname "$OUT")"
+
+# 一旦エクスポート → 人間が diff しやすい XML に変換
+defaults export com.apple.symbolichotkeys "$OUT"
+plutil -convert xml1 "$OUT"
+
+# 主な ID（参考にコメント末尾に貼ろうかと思ったが、plist 内には入れない）
+#   64: Show Spotlight search        (Cmd+Space)
+#   65: Show Finder search window    (Cmd+Option+Space)
+#   32: Mission Control             (Ctrl+Up)
+#   33: Application windows         (Ctrl+Down)
+#   36: Show Desktop                (F11)
+#   60: Select previous source      (Ctrl+Space)
+#   61: Select next source          (Ctrl+Option+Space)
+
+count=$(grep -cE '<key>[0-9]+</key>' "$OUT" || true)
+echo "captured AppleSymbolicHotKeys: ${count} entries → $OUT"

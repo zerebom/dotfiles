@@ -6,25 +6,55 @@
 
 旧仕事PC `CMPC0113`（=このリポジトリが今動いている環境）の dotfiles を **chezmoi + Brewfile/mas** に移行し、新仕事PC `CMPC0397` を **30分以内**でセットアップできる基盤を作る。Plan B（chezmoi 全面採用、新ブランチで並行構築 → cutover 型）。
 
-## 2. 現在地（2026-04-29 更新）
+## 2. 現在地（2026-04-29 大幅更新）
 
 - ブランチ: **`feat/chezmoi-migration`**（push 済み）
 - リモート: `git@github.com:zerebom/dotfiles.git`
-- 完了フェーズ: **Phase A-E + G + I（CMPC0397 で実機検証） + K一部**
+- 完了フェーズ: **Phase A-E + G + I（CMPC0397 で実機検証）+ I 拡張（capture/apply 継続移行フレームワーク）+ K一部**
 - 次フェーズ: **Phase J（cutover）→ H（旧PC側のシークレット剥離）→ K残（README/CLAUDE.md 書換）**
-- **Phase F は事実上不要**: 新PC `CMPC0397` を直接 chezmoi 一発でセットアップ済み。旧PC `CMPC0113` 上での検証 apply は試さなかった（cutover まで手元の symlink 構造を温存したまま、新PCで先に検証した）
 
-直近のコミット履歴:
+### 2026-04-29 セッションでの拡張（要点）
+
+当初スコープに含めていなかった「**継続的に CMPC0113 → CMPC0397 へ設定を同期する仕組み**」を追加した。
+詳細は `docs/migration.md` および `SESSION-LOG.md` を参照。
+
+追加された capture / apply の対象:
+
+| 種別 | capture | apply |
+|---|---|---|
+| macOS defaults（KeyRepeat / Dock / Finder / Text input / Hot Corners 等 24 項目） | `bin/capture-macos-defaults` | `home/run_onchange_after_apply-macos-defaults.sh.tmpl` |
+| Cursor user settings | `bin/capture-cursor` | chezmoi 直接ミラー |
+| Claude Code カスタム（agents/commands/skills/output-styles/settings.json） | `bin/capture-claude` | chezmoi 直接ミラー |
+| SSH config | `bin/capture-ssh` | chezmoi 直接ミラー（private_dot_ssh） |
+| Dock pinned apps の plist | `bin/capture-dock` | `home/run_onchange_after_apply-dock.sh.tmpl` |
+| Login Items（自動起動アプリ） | `bin/capture-login-items` | `home/run_onchange_after_apply-login-items.sh.tmpl` |
+| ghq クローン済みリポ一覧 | `bin/capture-ghq` | `home/run_once_after_clone-ghq-repos.sh.tmpl` |
+| Text Replacements / 日本語IMEユーザ辞書 | `bin/capture-text-replacements` | `home/run_onchange_after_apply-text-replacements.sh.tmpl` |
+| AppleSymbolicHotKeys（Spotlight 無効化など） | `bin/capture-symbolichotkeys` | `home/run_onchange_after_apply-symbolichotkeys.sh.tmpl` |
+| Raycast 設定 | （手動 GUI Export → `home/.assets/raycast-settings.rayconfig`） | `make raycast-import`（GUI Import） |
+
+`make capture` で全 capture 一括、`bin/capture-all` がオーケストレータ。
+
+### 直近のコミット履歴:
 
 ```
+（このコミットを書いている時点の最新は capture-symbolichotkeys 追加 + HANDOFF.md 更新）
+534b5e4 feat(chezmoi): Text Replacements / 日本語IMEユーザ辞書も継続移行
+a7a3e52 feat(chezmoi): 高〜中優先の引き継ぎ対象を継続移行可能に
+3c23ece chore: capture raycast-settings.rayconfig from CMPC0113
+78abf58 chore: capture macos-defaults from CMPC0113
+1c665dd feat(chezmoi): macOS defaults を継続移行可能に + zsh 雑多 fix
+2f0b067 docs(steering): Phase I 完了の記録 + 残作業を更新
 8270171 feat(chezmoi): Phase I - new PC (CMPC0397) で実機検証 + 失敗許容化
-e203fac docs(steering): refresh HANDOFF.md after Phase E/G/K-1 completion
-99eefaa chore: housekeeping + docs/chezmoi.md draft (Phase K-1)
-4ed5878 feat(chezmoi): Phase G - CI workflow + harden secrets template
-75de450 feat(chezmoi): Phase C-E complete - gitconfig, packages.yaml, run_* scripts
 ```
 
-CI: 過去の green: Run 25058730028 (e203fac)。最新 push (8270171) の結果は `gh run list --branch feat/chezmoi-migration --limit 1` で確認。
+### Phase F は事実上不要
+
+新PC `CMPC0397` を直接 chezmoi 一発でセットアップ済み。旧PC `CMPC0113` 上での検証 apply は試さなかった
+（cutover まで手元の symlink 構造を温存したまま、新PCで先に検証した）。Phase F の実体は Phase J の
+cutover と同時にまとめて実施する想定。
+
+CI: `gh run list --branch feat/chezmoi-migration --limit 3` で最新 3 run の結果が見える。
 
 ## 3. 必読ドキュメント（順番）
 
@@ -38,6 +68,8 @@ CI: 過去の green: Run 25058730028 (e203fac)。最新 push (8270171) の結果
 | 6 | `cursor-extensions.txt` | Cursor 拡張機能 137個 |
 | 7 | `vscode-extensions.txt` | VS Code 拡張機能 125個 |
 | 8 | `../../docs/chezmoi.md` | **新PCセットアップ手順 + 日常運用 + トラブルシューティング** |
+| 9 | `../../docs/migration.md` | **継続移行フレームワーク**（capture/apply）の運用ガイド |
+| 10 | `SESSION-LOG.md` | 2026-04-29 セッションの時系列記録（なぜ今この形か） |
 
 ## 4. すでに作ったもの
 

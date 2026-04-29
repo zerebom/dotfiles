@@ -22,6 +22,7 @@ run "$REPO_ROOT/bin/capture-dock"
 run "$REPO_ROOT/bin/capture-login-items"
 run "$REPO_ROOT/bin/capture-ghq"
 run "$REPO_ROOT/bin/capture-text-replacements"
+run "$REPO_ROOT/bin/capture-symbolichotkeys"
 
 echo ""
 echo "=== summary ==="

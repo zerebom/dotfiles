@@ -53,6 +53,9 @@ capture-ssh: ## ~/.ssh/config を吸い上げ（鍵は除外）
 capture-text-replacements: ## Text Replacements / 日本語IMEユーザ辞書を吸い上げ
 	@$(SOURCE_DIR)/bin/capture-text-replacements
 
+capture-symbolichotkeys: ## Spotlight 等のシステムホットキー全体を吸い上げ
+	@$(SOURCE_DIR)/bin/capture-symbolichotkeys
+
 raycast-import: ## Raycast 設定インポートダイアログを起動
 	@$(SOURCE_DIR)/bin/apply-raycast-settings
 
@@ -64,4 +67,4 @@ help: ## このヘルプ
 .PHONY: install apply diff list \
 	capture capture-macos capture-macos-diff capture-cursor capture-claude \
 	capture-dock capture-login-items capture-ghq capture-ssh \
-	capture-text-replacements raycast-import help
+	capture-text-replacements capture-symbolichotkeys raycast-import help

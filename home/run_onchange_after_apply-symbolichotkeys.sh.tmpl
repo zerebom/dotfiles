@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+{{- $plist := joinPath .chezmoi.sourceDir ".assets/symbolichotkeys.plist" -}}
+{{- if stat $plist }}
+set -euo pipefail
+
+# symbolichotkeys hash: {{ include ".assets/symbolichotkeys.plist" | sha256sum }}
+
+PLIST="{{ $plist }}"
+
+if [ ! -f "$PLIST" ]; then
+  echo "symbolichotkeys.plist not found, skip"
+  exit 0
+fi
+
+echo "==> applying AppleSymbolicHotKeys (Spotlight Cmd+Space 無効化など)"
+defaults import com.apple.symbolichotkeys "$PLIST"
+
+# シンボリックホットキーの即時反映
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
+
+# Raycast が起動中なら再起動して Cmd+Space を取り直す
+if pgrep -lf Raycast >/dev/null 2>&1; then
+  osascript -e 'quit app "Raycast"' 2>/dev/null || true
+  sleep 1
+  open -a Raycast 2>/dev/null || true
+fi
+
+echo "AppleSymbolicHotKeys applied"
+{{- else }}
+echo "no .assets/symbolichotkeys.plist (capture-symbolichotkeys 未実行 or 旧PC で push 待ち)"
+{{- end }}
+{{- end }}
