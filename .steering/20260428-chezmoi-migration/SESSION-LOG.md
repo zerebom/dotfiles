@@ -135,6 +135,50 @@ System Settings → Keyboard → Text Replacements（macOS では日本語IMEの
 
 「これまでの作業を記録として残しておいてほしい」リクエストでこのファイルを作成。
 
+### 11. 旧PC capture → 新PC apply で大半の引き継ぎ完了
+
+セッション後半、ユーザーが旧PC `CMPC0113` 側で `make capture` を一括実行 → push（commit `91167b5`）。
+新PC `CMPC0397` 側で `git pull --rebase` + `chezmoi apply --force` で取り込み:
+
+| 項目 | Before | After |
+|---|---|---|
+| Cursor settings.json | 無し | 7212 bytes |
+| Claude Code agents | 0 | 2 files |
+| Claude Code skills | 0 | 25 files |
+| Claude Code commands | 0 | 0（旧PCにも無し） |
+| SSH config | 無し | 813 bytes |
+| Login Items | Raycast, Notion | Raycast, Amical, ShowyEdge, CleanShot X, Nani |
+| Dock orientation | left | left（変更なし） |
+
+ghq 一括 clone は 3 件 fail（許容範囲、`|| true` で握り潰し）:
+- `hf.co/spaces/zerebom/translate-app` — Hugging Face space が削除 or private
+- `github.com/zerebom/voice-poc` — SSH known_hosts 未登録（`ssh -T git@github.com` で解消）
+- `github.com/zerebom/worktrees/feature/directory-restructure` — git worktree のパスが
+  ghq list に紛れ込んだ artifact（要 ghq-repos.txt クリーンアップ）
+
+`run_once_after_clone-ghq-repos.sh.tmpl` は exit 0 で chezmoi state に記録済み。
+個別失敗のリトライは `ghq get <name>` を手動で叩くだけ。
+
+## このセッション終了時の repo 状態
+
+- ブランチ `feat/chezmoi-migration` 最新: `3ad2fe9 feat(chezmoi): AppleSymbolicHotKeys を継続移行 + セッション記録`
+- CI: 直近 2 run 共に green
+- chezmoi state: 全 run スクリプトが state に記録（dock / login-items / macos-defaults /
+  text-replacements / symbolichotkeys / cursor-extensions / vscode-extensions /
+  install-packages / setup-nvim / clone-ghq-repos）
+
+## 次に動かすときのチェックポイント
+
+- [ ] CMPC0113 の `~/.dotfiles/.github_token` `~/.zsh/secrets.zsh` がまだローカルに残ってないか
+      （Phase H で削除）
+- [ ] ghq-repos.txt の `worktrees/feature/directory-restructure` 行を削除する PR
+- [ ] Cursor 拡張機能で marketplace から消えた 32 個の cleanup（`.assets/cursor-extensions.txt` から削除）
+- [ ] Phase J cutover: `Makefile` を chezmoi ラッパに（実は既に置換済みなので、PR description で
+      master にも持ち込めば良い）→ master merge
+- [ ] 新PC で `brew install --cask zoom docker-desktop`（sudo 必要）
+- [ ] 新PC で App Store サインイン → `mas install` 6 個
+- [ ] 新PC で keychain 投入
+
 ## 学び
 
 - **chezmoi は基本シンプルだが、「失敗許容」が必要なシーンが多い**:
