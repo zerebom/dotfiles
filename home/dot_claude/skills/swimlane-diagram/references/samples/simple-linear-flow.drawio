@@ -1,0 +1,98 @@
+<mxfile host="Electron">
+  <diagram name="Customer Inquiry Process" id="sample">
+    <mxGraphModel dx="1240" dy="640" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="none" defaultFontFamily="Noto Sans JP">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="顧客問い合わせ対応プロセス" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=24;fontStyle=1;fontFamily=Noto Sans JP;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="560" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Swimlane 1: Customer -->
+        <mxCell id="lane1" value="顧客（Customer）" style="swimlane;html=1;startSize=40;horizontal=1;containerType=tree;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="120" y="120" width="1000" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Customer: Start -->
+        <mxCell id="start1" value="問い合わせ送信" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="lane1">
+          <mxGeometry x="40" y="50" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Customer: End -->
+        <mxCell id="end1" value="回答受信" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="lane1">
+          <mxGeometry x="860" y="50" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Swimlane 2: Support -->
+        <mxCell id="lane2" value="サポート（Support）" style="swimlane;html=1;startSize=40;horizontal=1;containerType=tree;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="120" y="280" width="1000" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Support: Receive Inquiry -->
+        <mxCell id="task1" value="問い合わせ受信" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#000000;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="lane2">
+          <mxGeometry x="200" y="50" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Support: Confirm Content -->
+        <mxCell id="task2" value="内容確認" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#000000;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="lane2">
+          <mxGeometry x="420" y="50" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Support: Send Response -->
+        <mxCell id="task5" value="回答送信" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#000000;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="lane2">
+          <mxGeometry x="760" y="50" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Swimlane 3: Engineering -->
+        <mxCell id="lane3" value="エンジニアリング（Engineering）" style="swimlane;html=1;startSize=40;horizontal=1;containerType=tree;fillColor=#ffe6cc;strokeColor=#d79b00;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="120" y="440" width="1000" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Engineering: Technical Investigation -->
+        <mxCell id="task3" value="技術調査" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#000000;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="lane3">
+          <mxGeometry x="420" y="50" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Engineering: Create Response -->
+        <mxCell id="task4" value="回答作成" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#000000;fontFamily=Noto Sans JP;fontSize=18;fontColor=#000000;" vertex="1" parent="lane3">
+          <mxGeometry x="620" y="50" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows -->
+
+        <!-- Start -> Receive Inquiry -->
+        <mxCell id="arrow1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="start1" target="task1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Receive Inquiry -> Confirm Content -->
+        <mxCell id="arrow2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="task1" target="task2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Confirm Content -> Technical Investigation -->
+        <mxCell id="arrow3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="task2" target="task3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Technical Investigation -> Create Response -->
+        <mxCell id="arrow4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="task3" target="task4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Create Response -> Send Response -->
+        <mxCell id="arrow5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="task4" target="task5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Send Response -> End -->
+        <mxCell id="arrow6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="task5" target="end1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

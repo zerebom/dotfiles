@@ -1,0 +1,31 @@
+<mxfile host="Electron">
+  <diagram name="Swimlane Template" id="template">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="none" defaultFontFamily="Noto Sans JP">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="プロセス名" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=24;fontStyle=1;fontFamily=Noto Sans JP;" vertex="1" parent="1">
+          <mxGeometry x="200" y="40" width="400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Swimlane 1: Lane A -->
+        <mxCell id="lane1" value="レーンA" style="swimlane;html=1;startSize=40;horizontal=1;containerType=tree;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Noto Sans JP;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="120" y="120" width="680" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Swimlane 2: Lane B -->
+        <mxCell id="lane2" value="レーンB" style="swimlane;html=1;startSize=40;horizontal=1;containerType=tree;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Noto Sans JP;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="120" y="280" width="680" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Swimlane 3: Lane C -->
+        <mxCell id="lane3" value="レーンC" style="swimlane;html=1;startSize=40;horizontal=1;containerType=tree;fillColor=#ffe6cc;strokeColor=#d79b00;fontFamily=Noto Sans JP;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="120" y="440" width="680" height="160" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

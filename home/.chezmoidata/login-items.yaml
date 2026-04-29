@@ -1,0 +1,9 @@
+# Login Items snapshot
+# capture: 2026-04-29 11:20:25 on CMPC0113
+loginItems:
+  - { path: "/Applications/Nani.app", hidden: false }
+  - { path: "/Applications/CleanShot X.app", hidden: false }
+  - { path: "/Applications/ShowyEdge.app", hidden: false }
+  - { path: "/Applications/Amical.app", hidden: false }
+  - { path: "/Applications/Raycast.app", hidden: false }
+  - { path: "/Users/zerebom/Library/Application Support/Figma/FigmaAgent.app", hidden: false }
