@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# 現在の macOS defaults 値を home/.chezmoidata/macos-defaults.yaml に書き戻す。
+#
+# 使い方:
+#   bin/capture-macos-defaults              # YAML を上書き
+#   bin/capture-macos-defaults --diff       # 差分のみ表示（commit 前の確認）
+#
+# 旧PC `CMPC0113` で叩く想定。新PC側 (CMPC0397) で叩くと、新PC基準で上書きされてしまう点に注意。
+# YAML に既存リストされたキーのみ読みに行く。新規キーを足す場合は YAML に追加してから。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+YAML="${REPO_ROOT}/home/.chezmoidata/macos-defaults.yaml"
+
+if [ ! -f "$YAML" ]; then
+  echo "ERROR: ${YAML} not found" >&2
+  exit 1
+fi
+
+DIFF_ONLY=0
+[[ "${1:-}" == "--diff" ]] && DIFF_ONLY=1
+
+# Python で YAML を読み書き（Mac 標準で来てる Python 3 利用）
+exec /usr/bin/env python3 - "$YAML" "$DIFF_ONLY" <<'PY'
+import subprocess
+import sys
+import re
+from pathlib import Path
+
+YAML_PATH = Path(sys.argv[1])
+DIFF_ONLY = sys.argv[2] == "1"
+
+text = YAML_PATH.read_text()
+original = text
+lines = text.splitlines(keepends=False)
+
+def read_default(domain, key, type_flag):
+    """defaults read X Y を実行、未設定なら None"""
+    cmd = ["defaults", "read"]
+    if domain != "-g":
+        cmd.append(domain)
+    else:
+        cmd.append("-g")
+    cmd.append(key)
+    res = subprocess.run(cmd, capture_output=True, text=True)
+    if res.returncode != 0:
+        return None
+    raw = res.stdout.strip()
+    if type_flag == "-bool":
+        return "true" if raw in ("1", "true", "YES") else "false"
+    if type_flag == "-int":
+        return raw
+    if type_flag == "-float":
+        return raw
+    if type_flag == "-string":
+        return raw
+    return raw
+
+# 簡易パーサ: -    domain: ... の塊を順に処理
+# YAML の構造を完全パースせず、行単位で domain/key/type を拾い、value: 行を更新する。
+out_lines = []
+i = 0
+n = len(lines)
+domain = key = type_flag = None
+captured = applied = unchanged = nochange = 0
+
+# block 単位 (-) の行を探して、その中の各属性を集めて value: を上書き
+def get_attr(block_lines, name):
+    for ln in block_lines:
+        # allow optional leading "- " (YAML list marker) before the key
+        m = re.match(rf'^\s*(?:-\s+)?{re.escape(name)}:\s*"?([^"#]*?)"?\s*(#.*)?$', ln)
+        if m:
+            return m.group(1).strip().strip('"')
+    return None
+
+# blocks: list of (start_idx, end_idx_exclusive)
+blocks = []
+in_block_start = -1
+for idx, line in enumerate(lines):
+    if re.match(r'^\s{4}-\s+domain:', line):
+        if in_block_start >= 0:
+            blocks.append((in_block_start, idx))
+        in_block_start = idx
+if in_block_start >= 0:
+    blocks.append((in_block_start, n))
+
+new_lines = lines[:]
+for start, end in blocks:
+    block = lines[start:end]
+    domain = get_attr(block, "domain")
+    key = get_attr(block, "key")
+    type_flag = get_attr(block, "type")
+    if not (domain and key and type_flag):
+        continue
+    new_value = read_default(domain, key, type_flag)
+    # value: 行を見つけて書き換え
+    for j in range(start, end):
+        m = re.match(r'^(\s+value:\s*)(.+)$', new_lines[j])
+        if not m:
+            continue
+        prefix = m.group(1)
+        old_raw = m.group(2).strip()
+        if new_value is None:
+            new_raw = "null"
+        elif type_flag == "-string":
+            esc = new_value.replace('"', '\\"')
+            new_raw = f'"{esc}"'
+        elif type_flag == "-bool":
+            new_raw = new_value
+        else:
+            new_raw = new_value
+        if old_raw == new_raw:
+            unchanged += 1
+        else:
+            captured += 1
+        new_lines[j] = f'{prefix}{new_raw}'
+        break
+
+new_text = "\n".join(new_lines) + ("\n" if text.endswith("\n") else "")
+
+if DIFF_ONLY:
+    if new_text == original:
+        print("no changes")
+        sys.exit(0)
+    import difflib
+    diff = difflib.unified_diff(
+        original.splitlines(keepends=True),
+        new_text.splitlines(keepends=True),
+        fromfile=str(YAML_PATH),
+        tofile=str(YAML_PATH) + " (would write)",
+    )
+    sys.stdout.writelines(diff)
+    sys.exit(0)
+
+YAML_PATH.write_text(new_text)
+print(f"captured: {captured} changed, {unchanged} unchanged")
+PY

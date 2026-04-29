@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Raycast 設定の Import を起動するヘルパ。
+# 旧PC: Raycast → Settings → Advanced → Export → home/.assets/raycast-settings.rayconfig として保存・commit
+# 新PC: bin/apply-raycast-settings を実行 → Raycast がインポートダイアログを開く
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+RAYCONFIG="${REPO_ROOT}/home/.assets/raycast-settings.rayconfig"
+
+if [ ! -f "$RAYCONFIG" ]; then
+  cat <<EOF
+ERROR: ${RAYCONFIG} not found.
+
+旧PC側で以下を実施してから:
+  1. Raycast を開く
+  2. Settings → Advanced → Export
+  3. 出力ファイルを '${RAYCONFIG}' として保存
+  4. git add ${RAYCONFIG} && git commit
+  5. push
+EOF
+  exit 1
+fi
+
+# Raycast は .rayconfig を open で開けばインポートフローに入る
+if ! command -v open >/dev/null 2>&1; then
+  echo "ERROR: open command not found（macOS 専用）" >&2
+  exit 1
+fi
+
+echo "==> opening Raycast import dialog with ${RAYCONFIG}"
+open -a Raycast "${RAYCONFIG}"
+echo "Raycast でインポートダイアログが出たら 'Import' をクリック"

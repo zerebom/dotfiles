@@ -59,7 +59,7 @@ alias vidot='cd ~/.dotfiles|vim'
 
 alias -g @g="| ag"
 alias -g @l="| less"
-alias date='/usr/local/bin/gdate'
+command -v gdate >/dev/null 2>&1 && alias date='gdate'
 
 # Claude Code
 alias cc='claude'

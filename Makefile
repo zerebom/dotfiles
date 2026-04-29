@@ -1,44 +1,40 @@
-DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-CANDIDATES := $(wildcard .??*) bin
-EXCLUSIONS := .DS_Store .git .gitmodules .travis.yml
-DOTFILES   := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
+SOURCE_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+CHEZMOI    := $(shell command -v chezmoi)
 
 .DEFAULT_GOAL := help
 
-all:
-
-list: ## Show dot files in this repo
-	@$(foreach val, $(DOTFILES), /bin/ls -dF $(val);)
-
-install: ## Create symlink to home directory
-	@echo 'Copyright (c) 2013-2015 BABAROT All Rights Reserved.'
-	@echo '==> Start to deploy dotfiles to home directory.'
-	@echo ''
-	@$(foreach val, $(DOTFILES), \
-		if [ -e $(HOME)/$(val) ] && [ ! -L $(HOME)/$(val) ]; then \
-			echo "Backing up existing $(val) to $(val).backup"; \
-			mv $(HOME)/$(val) $(HOME)/$(val).backup; \
-		fi; \
-		ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
-	@echo ''
-	@echo '==> Setting up .config symlinks...'
-	@mkdir -p $(HOME)/.config
-	@if [ -e $(HOME)/.config/ghostty ] && [ ! -L $(HOME)/.config/ghostty ]; then \
-		echo "Backing up existing .config/ghostty"; \
-		mv $(HOME)/.config/ghostty $(HOME)/.config/ghostty.backup; \
+install: ## このリポジトリを chezmoi の source-state にして apply
+	@if [ -z "$(CHEZMOI)" ]; then \
+		echo "chezmoi not found. Install with: brew install chezmoi"; exit 1; \
 	fi
-	@ln -sfnv $(DOTPATH)/.config/ghostty $(HOME)/.config/ghostty
-	@echo ''
-	@echo '==> Setting up .claude symlinks...'
-	@mkdir -p $(HOME)/.claude
-	@ln -sfnv $(DOTPATH)/.claude/global.md $(HOME)/.claude/CLAUDE.md
+	@if [ ! -e $$HOME/.local/share/chezmoi ]; then \
+		mkdir -p $$HOME/.local/share; \
+		ln -s $(SOURCE_DIR) $$HOME/.local/share/chezmoi; \
+		echo "linked: $$HOME/.local/share/chezmoi -> $(SOURCE_DIR)"; \
+	fi
+	@chezmoi init --source=$(SOURCE_DIR)
+	@chezmoi apply --force --source=$(SOURCE_DIR)
 
-clean: ## Remove the dot files and this repo
-	@echo 'Remove dot files in your home directory...'
-	@-$(foreach val, $(DOTFILES), rm -vrf $(HOME)/$(val);)
-	-rm -rf $(DOTPATH)
+apply: install ## install のエイリアス
 
-help: ## Self-documented Makefile
+diff: ## chezmoi で現状との差分を表示
+	@chezmoi diff
+
+list: ## chezmoi 管理対象パスを表示
+	@chezmoi managed
+
+capture-macos: ## 現環境の macOS defaults 値を YAML に書き戻す（旧PC で叩く想定）
+	@$(SOURCE_DIR)/bin/capture-macos-defaults
+
+capture-macos-diff: ## 上の --diff（書かずに差分のみ表示）
+	@$(SOURCE_DIR)/bin/capture-macos-defaults --diff
+
+raycast-import: ## Raycast 設定インポートダイアログを起動
+	@$(SOURCE_DIR)/bin/apply-raycast-settings
+
+help: ## このヘルプ
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| sort \
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-22s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: install apply diff list capture-macos capture-macos-diff raycast-import help

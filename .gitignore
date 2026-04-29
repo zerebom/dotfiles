@@ -2,3 +2,7 @@
 .vercel
 .github_token
 .zsh/secrets.zsh
+
+# Claude Code local state
+.claude/scheduled_tasks.lock
+.claude/settings.local.json

@@ -10,8 +10,11 @@ packages:
         - git
         - gh
         - ghq
+        - fzf
         - fd
         - ripgrep
+        - coreutils      # gdate 等の GNU 系（dot_zsh/aliases.zsh で `alias date=gdate`）
+        - zinit          # zsh プラグインマネージャ（.zshrc で source）
         - bat
         - eza
         - jq

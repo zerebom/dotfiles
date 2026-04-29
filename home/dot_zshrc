@@ -427,7 +427,7 @@ zinit light simnalamburt/shellder
 
 # pnpm
 # pnpm
-export PNPM_HOME="/Users/zerebom/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -440,12 +440,12 @@ eval "$(fnm env --use-on-cd)"
 # compinit は .zshenvまたは他の場所で一度だけ実行
 
 
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 
 
 # bun completions
-[ -s "/Users/zerebom/.bun/_bun" ] && source "/Users/zerebom/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
@@ -475,7 +475,7 @@ export PATH="$PATH:/path/to/osascript"
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
 
 # Added by Antigravity
-export PATH="/Users/zerebom/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 # zoxide - スマートディレクトリジャンプ
 if command -v zoxide >/dev/null 2>&1; then
