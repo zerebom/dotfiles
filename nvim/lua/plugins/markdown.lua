@@ -30,4 +30,12 @@ return {
       { "<S-Tab>", "<gv", mode = "x", desc = "Outdent selection" },
     },
   },
+
+  -- インバッファのマークダウンレンダリング (見出し・bullet・code block の見栄え向上)
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown" },
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+    opts = {},
+  },
 }
