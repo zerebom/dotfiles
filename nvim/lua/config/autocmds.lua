@@ -9,3 +9,9 @@
 
 -- 日本語が辞書にないので markdown / gitcommit の spell check を全部止める
 pcall(vim.api.nvim_del_augroup_by_name, "lazyvim_wrap_spell")
+
+-- 外部変更を検知してバッファを再読み込み（Claude Code等の書き換えに追従）
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+  group = vim.api.nvim_create_augroup("auto_reload", { clear = true }),
+  command = "if mode() != 'c' | checktime | endif",
+})
