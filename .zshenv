@@ -4,12 +4,12 @@
 #it can force /etc/z* files after /etc/zshenv to be skipped
 setopt no_global_rcs
 
-# homebrewのインストール先
+# homebrew インストール先（Apple Silicon は /opt/homebrew、Intel/Linux は環境ごと）
 brewPrefix=""
 
 case "$(uname)" in
   "Darwin")
-    brewPrefix="/usr/local"
+    brewPrefix="/opt/homebrew"
     ;;
   "Linux")
     brewPrefix="/home/linuxbrew/.linuxbrew"
@@ -26,30 +26,10 @@ source $HOME/.zsh/exports.zsh
 source $HOME/.zsh/aliases.zsh
 [[ -f "$HOME/.zsh/secrets.zsh" ]] && source "$HOME/.zsh/secrets.zsh"
 
-# Load GitHub token if exists
-if [ -f "$HOME/.dotfiles/.github_token" ]; then
-  source $HOME/.dotfiles/.github_token
-fi
-
 # rbenv
 if [ -d "${HOME}/.rbenv" ]; then
   eval "$(rbenv init -)"
 fi
-
-# pyenv
-#if [ -d "${HOME}/.pyenv" ]; then
-#  eval "$(pyenv init -)"
-#fi
-
-# nodenv
-#if [ -d "${HOME}/.nodenv" ]; then
-#  eval "$(nodenv init -)"
-#fi
-#
-## jenv
-#if [ -d "${HOME}/.jenv" ]; then
-#  eval "$(jenv init -)"
-#fi
 
 # direnv
 if type direnv > /dev/null 2>&1; then
@@ -57,7 +37,4 @@ if type direnv > /dev/null 2>&1; then
 fi
 
 # rust
-#if [ -d "${HOME}/.cargo" ]; then
-#  source $HOME/.cargo/env
-#fi
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"

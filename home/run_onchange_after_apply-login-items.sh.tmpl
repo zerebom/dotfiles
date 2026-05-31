@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+{{- if hasKey . "loginItems" }}
+set -euo pipefail
+
+# login items hash: {{ .loginItems | toYaml | sha256sum }}
+
+echo "==> applying Login Items"
+
+# 既存をすべて削除してから再生成（冪等にするため）
+osascript <<'OSA' >/dev/null 2>&1 || true
+tell application "System Events"
+  delete every login item
+end tell
+OSA
+
+added=0
+{{ range .loginItems }}
+osascript <<OSA >/dev/null 2>&1 && added=$((added+1)) || echo "  ⚠️  skip: {{ .path }} (アプリ未インストール?)"
+tell application "System Events"
+  make login item at end with properties { path: "{{ .path }}", hidden: {{ .hidden }} }
+end tell
+OSA
+{{- end }}
+
+echo "Login Items: applied=${added}"
+{{- else }}
+echo "no .chezmoidata/login-items.yaml (capture-login-items 未実行 or 旧PC で push 待ち)"
+{{- end }}
+{{- end }}

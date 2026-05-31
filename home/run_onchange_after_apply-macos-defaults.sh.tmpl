@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+set -euo pipefail
+
+# defaults snapshot hash: {{ .macos.defaults | toYaml | sha256sum }}
+# YAML が更新される度に再実行（run_onchange）。`defaults write` は冪等なので何度走らせても安全。
+# 値が null の項目はスキップ。bin/capture-macos-defaults を旧PC で叩いて埋める想定。
+
+echo "==> applying macOS defaults"
+
+applied=0
+skipped=0
+{{ range .macos.defaults -}}
+{{- if ne .value nil }}
+{{- if eq .type "-bool" }}
+defaults write {{ .domain }} {{ .key | quote }} -bool {{ .value }} && applied=$((applied+1))
+{{- else if eq .type "-int" }}
+defaults write {{ .domain }} {{ .key | quote }} -int {{ .value }} && applied=$((applied+1))
+{{- else if eq .type "-float" }}
+defaults write {{ .domain }} {{ .key | quote }} -float {{ .value }} && applied=$((applied+1))
+{{- else if eq .type "-string" }}
+defaults write {{ .domain }} {{ .key | quote }} -string {{ .value | quote }} && applied=$((applied+1))
+{{- else }}
+defaults write {{ .domain }} {{ .key | quote }} {{ .type }} {{ .value }} && applied=$((applied+1))
+{{- end }}
+{{- else }}
+skipped=$((skipped+1))   # {{ .domain }} {{ .key }} (value: null)
+{{- end }}
+{{ end }}
+
+# Dock / Finder の再起動で変更を反映
+killall Dock 2>/dev/null || true
+killall Finder 2>/dev/null || true
+
+echo "macOS defaults: applied=${applied}, skipped=${skipped}"
+
+{{- end }}

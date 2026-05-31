@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+set -euo pipefail
+
+# packages hash: {{ .packages.darwin | toYaml | sha256sum }}
+
+# brew + cask
+# 失敗を許容（karabiner-elements / docker-desktop など sudo を要する cask は非対話環境で必ず失敗するが、
+# brew bundle は他の cask 処理を継続するため最終 exit を握り潰すだけで十分）。
+# 再試行は `brew bundle install --file=<(chezmoi execute-template < ~/.local/share/chezmoi/home/run_onchange_before_install-packages-darwin.sh.tmpl | sed -n "/cat <<.EOF./,/^EOF$/p" | sed '1d;$d')` などで個別に。
+cat <<'EOF' | brew bundle --file=/dev/stdin || echo "warning: brew bundle に失敗あり。sudo を要する cask（karabiner-elements 等）は対話シェルで 'brew install --cask <name>' を実行してください"
+{{- range .packages.darwin.common.brews }}
+brew "{{ . }}"
+{{- end }}
+{{- range .packages.darwin.common.casks }}
+cask "{{ . }}"
+{{- end }}
+{{- if .isWork }}
+{{- range .packages.darwin.work.casks }}
+cask "{{ . }}"
+{{- end }}
+{{- end }}
+EOF
+
+{{- if .isWork }}
+
+# mas（App Store サインイン必須。未サインインなら警告のみで apply は継続）
+if command -v mas >/dev/null 2>&1; then
+  if mas account >/dev/null 2>&1; then
+    cat <<'EOF' | brew bundle --file=/dev/stdin || echo "warning: 一部 mas インストールに失敗。後で手動 'brew bundle install' でリトライ"
+{{- range .packages.darwin.work.mas }}
+mas "{{ .name }}", id: {{ .id }}
+{{- end }}
+EOF
+  else
+    echo "warning: App Store 未サインイン。mas インストールをスキップ。サインイン後 'chezmoi apply --force' で再実行可"
+  fi
+fi
+{{- end }}
+{{- end }}

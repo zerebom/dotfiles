@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ~/.config/nvim を chezmoi 管轄外の nvim/ ディレクトリに symlink する。
+# nvim/ は LazyVim 配下の lazy-lock.json が頻繁に変わるため chezmoi 管理対象から外している。
+
+NVIM_SRC="{{ .chezmoi.workingTree }}/nvim"
+NVIM_DST="${HOME}/.config/nvim"
+
+mkdir -p "${HOME}/.config"
+
+if [ -L "${NVIM_DST}" ]; then
+  current="$(readlink "${NVIM_DST}")"
+  if [ "${current}" = "${NVIM_SRC}" ]; then
+    echo "nvim symlink already correct: ${NVIM_DST} -> ${NVIM_SRC}"
+    exit 0
+  fi
+  echo "replacing existing symlink: ${NVIM_DST} -> ${current}"
+  rm "${NVIM_DST}"
+elif [ -e "${NVIM_DST}" ]; then
+  echo "ERROR: ${NVIM_DST} exists and is not a symlink. Refusing to overwrite." >&2
+  exit 1
+fi
+
+ln -s "${NVIM_SRC}" "${NVIM_DST}"
+echo "linked: ${NVIM_DST} -> ${NVIM_SRC}"

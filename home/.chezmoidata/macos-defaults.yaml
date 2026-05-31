@@ -1,0 +1,153 @@
+# macOS defaults snapshot
+# 旧PC `CMPC0113` で `make capture-macos` を実行すると、その時点の値で上書きされる。
+# value: null の項目は capture-macos 未実施 or 未設定を意味する。chezmoi apply 時にスキップ。
+#
+# domain: defaults のドメイン（"-g" は NSGlobalDomain）
+# key:    キー名
+# type:   -int / -bool / -float / -string / -array / -dict
+# value:  YAML スカラ（type に応じて int/bool/float/string）
+
+macos:
+  defaults:
+    # ── Keyboard ─────────────────────────────────────────────
+    - domain: "-g"
+      key: "KeyRepeat"
+      type: "-int"
+      value: 2
+      note: "リピート速度。小さいほど高速。1=最速、デフォルト=6"
+    - domain: "-g"
+      key: "InitialKeyRepeat"
+      type: "-int"
+      value: 15
+      note: "リピート開始までのディレイ。小さいほど早く開始。デフォルト=68"
+    - domain: "-g"
+      key: "ApplePressAndHoldEnabled"
+      type: "-bool"
+      value: false
+      note: "false にするとリピート優先（press-and-hold メニュー無効）"
+    - domain: "-g"
+      key: "AppleKeyboardUIMode"
+      type: "-int"
+      value: 0
+      note: "Tab で全コントロール移動可（=2 or 3）"
+
+    # ── Trackpad / Mouse ─────────────────────────────────────
+    - domain: "-g"
+      key: "com.apple.swipescrolldirection"
+      type: "-bool"
+      value: false
+      note: "ナチュラルスクロール方向（true=ナチュラル）"
+    - domain: "com.apple.AppleMultitouchTrackpad"
+      key: "Clicking"
+      type: "-bool"
+      value: true
+      note: "タップでクリック"
+    - domain: "com.apple.AppleMultitouchTrackpad"
+      key: "TrackpadThreeFingerDrag"
+      type: "-bool"
+      value: false
+      note: "3本指ドラッグ"
+
+    # ── Dock ─────────────────────────────────────────────────
+    - domain: "com.apple.dock"
+      key: "orientation"
+      type: "-string"
+      value: "left"
+      note: "left / bottom / right"
+    - domain: "com.apple.dock"
+      key: "autohide"
+      type: "-bool"
+      value: true
+    - domain: "com.apple.dock"
+      key: "tilesize"
+      type: "-int"
+      value: 59
+    - domain: "com.apple.dock"
+      key: "show-recents"
+      type: "-bool"
+      value: null
+
+    # ── Finder ───────────────────────────────────────────────
+    - domain: "com.apple.finder"
+      key: "ShowPathbar"
+      type: "-bool"
+      value: null
+    - domain: "com.apple.finder"
+      key: "ShowStatusBar"
+      type: "-bool"
+      value: null
+    - domain: "com.apple.finder"
+      key: "AppleShowAllFiles"
+      type: "-bool"
+      value: null
+    - domain: "com.apple.finder"
+      key: "_FXSortFoldersFirst"
+      type: "-bool"
+      value: null
+    - domain: "-g"
+      key: "AppleShowAllExtensions"
+      type: "-bool"
+      value: null
+
+    # ── Text input（オートコレクト系。コーディングしてるなら全部 false 推奨）─
+    - domain: "-g"
+      key: "NSAutomaticCapitalizationEnabled"
+      type: "-bool"
+      value: false
+    - domain: "-g"
+      key: "NSAutomaticDashSubstitutionEnabled"
+      type: "-bool"
+      value: null
+    - domain: "-g"
+      key: "NSAutomaticPeriodSubstitutionEnabled"
+      type: "-bool"
+      value: false
+    - domain: "-g"
+      key: "NSAutomaticQuoteSubstitutionEnabled"
+      type: "-bool"
+      value: null
+    - domain: "-g"
+      key: "NSAutomaticSpellingCorrectionEnabled"
+      type: "-bool"
+      value: false
+
+    # ── Screenshots ──────────────────────────────────────────
+    - domain: "com.apple.screencapture"
+      key: "location"
+      type: "-string"
+      value: "~/ScreenShot"
+      note: "保存先パス"
+    - domain: "com.apple.screencapture"
+      key: "type"
+      type: "-string"
+      value: null
+      note: "png / jpg / pdf / tiff"
+    - domain: "com.apple.screencapture"
+      key: "disable-shadow"
+      type: "-bool"
+      value: null
+
+    # ── Hot Corners ──────────────────────────────────────────
+    # 0=なし 2=Mission Control 3=アプリケーションウィンドウ 4=デスクトップ 5=スクリーンセーバー起動
+    # 6=スクリーンセーバー無効 7=Dashboard 10=ディスプレイをスリープ 11=Launchpad 12=通知センター
+    # 13=ロック画面 14=クイックメモ
+    - domain: "com.apple.dock"
+      key: "wvous-tl-corner"
+      type: "-int"
+      value: null
+    - domain: "com.apple.dock"
+      key: "wvous-tr-corner"
+      type: "-int"
+      value: null
+    - domain: "com.apple.dock"
+      key: "wvous-bl-corner"
+      type: "-int"
+      value: null
+    - domain: "com.apple.dock"
+      key: "wvous-br-corner"
+      type: "-int"
+      value: 14
+
+    # ── Spotlight ────────────────────────────────────────────
+    # orderedItems は array なので個別 key/value では表現できない。
+    # 別途 defaults export com.apple.Spotlight で plist に出して home/.assets/spotlight.plist として commit する形を推奨。

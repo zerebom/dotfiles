@@ -1,0 +1,82 @@
+# Homebrew に無い / 重いため packages.yaml から除外（必要時に手動インストール）:
+#   - autoraise     : github.com/sbmpost/AutoRaise を手動ビルド
+#   - skitch        : Evernote が配布終了。代替は CleanShot / Shottr
+#   - wkhtmltopdf   : 本家アーカイブ (2023)、tap も無し。weasyprint 等の代替を検討
+#   - mactex-no-gui : 5GB。LaTeX が必要になったら `brew install --cask mactex-no-gui`
+packages:
+  darwin:
+    common:
+      brews:
+        - git
+        - gh
+        - ghq
+        - fzf
+        - fd
+        - ripgrep
+        - coreutils      # gdate 等の GNU 系（dot_zsh/aliases.zsh で `alias date=gdate`）
+        - zinit          # zsh プラグインマネージャ（.zshrc で source）
+        - bat
+        - eza
+        - jq
+        - yq
+        - jnv
+        - neovim
+        - tmux
+        - reattach-to-user-namespace
+        - starship
+        - zoxide
+        - atuin
+        - direnv
+        - gnupg
+        - pinentry-mac
+        - pyenv
+        - uv
+        - fnm
+        - deno
+        - duckdb
+        - ffmpeg
+        - graphviz
+        - pandoc
+        - tree
+        - wget
+        - mas
+      casks:
+        - ghostty
+        - google-chrome
+        - raycast
+        - karabiner-elements
+        - cleanshot
+        - obsidian
+        - cursor
+        - visual-studio-code
+        - claude
+        - chatgpt
+        - spotify
+        - monitorcontrol
+        - showyedge
+        - amical
+        - warp
+        - drawio
+        - figma
+        - miro
+        - todoist
+        - notion
+        - tableplus
+        - postman
+        - font-plemol-jp-nf
+    work:
+      casks:
+        - slack
+        - discord
+        - zoom
+        - linear-linear
+        - docker-desktop
+      mas:
+        - { name: Bitwarden,       id: 1352778147 }
+        - { name: Keynote,         id: 409183694 }
+        - { name: Microsoft Excel, id: 462058435 }
+        - { name: RunCat,          id: 1429033973 }
+        - { name: Sequel Ace,      id: 1518036000 }
+        - { name: Tailscale,       id: 1475387142 }
+    personal:
+      # 個人Macで使うアプリは将来追記

@@ -1,0 +1,184 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(cd /Users/zerebom:*)",
+      "Bash(make:*)",
+      "Bash(diff:*)",
+      "Bash(wc:*)",
+      "Bash(git add:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git status:*)",
+      "Bash(patch:*)",
+      "Bash(tail:*)",
+      "Bash(uv sync:*)",
+      "Bash(gh:*)",
+      "Bash(uv run:*)",
+      "Bash(source:*)",
+      "Bash(PYTEST_DISABLE_PLUGIN_AUTOLOAD=\"\" uv run --frozen pytest tests/test_session_utils.py -v)",
+      "Bash(PYTEST_DISABLE_PLUGIN_AUTOLOAD=\"\" uv run --frozen pytest tests/ -v)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(mv:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(uv venv:*)",
+      "Bash(uv add:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(rg:*)",
+      "Bash(/Users/zerebom/.nvm/versions/node/v18.17.1/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg -n \"(->|:)\\s*(dict|list|set|tuple)(\\s|$|=|:)\" --type py)",
+      "Bash(/Users/zerebom/.nvm/versions/node/v18.17.1/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg -n \"def.*\\)\\s*->\\s*(dict|list|set|tuple)\\s*:\" --type py)",
+      "Bash(/Users/zerebom/.nvm/versions/node/v18.17.1/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg -B2 -A2 \"list\\[dict\\]\" --type py)",
+      "Bash(PYTEST_DISABLE_PLUGIN_AUTOLOAD=\"\" uv run --frozen pytest tests/test_natural_insights.py -v)",
+      "Bash(PYTEST_DISABLE_PLUGIN_AUTOLOAD=\"\" uv run --frozen pytest tests/test_natural_insights.py::TestNaturalInsights::test_empty_posts_handling -v)",
+      "Bash(python:*)",
+      "Bash(play:*)",
+      "Bash(ln:*)",
+      "Bash(rmdir:*)",
+      "Bash(tree:*)",
+      "Bash(rm:*)",
+      "Bash(readlink:*)",
+      "Bash(claude mcp add todoist-server:*)",
+      "Bash(npx:*)",
+      "Bash(npm search:*)",
+      "Bash(claude mcp:*)",
+      "Bash(claude --debug 2 >& 1)",
+      "Bash(claude --debug)",
+      "Bash(claude --debug \"test\")",
+      "Bash(npm install:*)",
+      "Bash(claude --debug \"test connection\")",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(echo $PATH)",
+      "Bash(crontab:*)",
+      "mcp__serena__list_memories",
+      "mcp__serena__write_memory",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__list_dir",
+      "mcp__serena__find_file",
+      "mcp__serena__search_for_pattern",
+      "Bash(node:*)",
+      "Bash(npm --version)",
+      "Bash(claude --version)",
+      "Bash(cat:*)",
+      "Bash(nvm alias:*)",
+      "Bash(cp:*)",
+      "Bash(time zsh:*)",
+      "Bash(git stash:*)",
+      "Bash(git branch:*)",
+      "Bash(true)",
+      "Bash(/bin/date:*)",
+      "Skill(skill-creator)",
+      "Skill(doc-co-creation)",
+      "Skill(imagegen)",
+      "Bash(git -C /Users/zerebom/ghq/github.com/dayone-jp/commune-pdm log --oneline --all)",
+      "Bash(git worktree:*)",
+      "Bash(head:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git merge:*)",
+      "Bash(gcalcli:*)",
+      "Skill(steering)",
+      "WebSearch",
+      "Bash(pip install gcalcli)",
+      "Bash(pip uninstall:*)",
+      "Bash(uv init:*)",
+      "Bash(tmux set:*)",
+      "Bash(tmux show-options:*)",
+      "Bash(tmux show:*)",
+      "Bash(tmux source:*)",
+      "Skill(generic-analysis-and-reporting)",
+      "mcp__linear-server__list_issues",
+      "mcp__linear-server__list_projects",
+      "mcp__linear-server__get_project",
+      "Bash(git fetch:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(jq:*)",
+      "mcp__linear-server__get_issue",
+      "Bash(echo:*)",
+      "Bash(pbcopy)",
+      "mcp__linear-server__create_issue",
+      "Bash(git submodule add:*)",
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__initial_instructions",
+      "mcp__serena__find_referencing_symbols",
+      "Bash(git -C /Users/zerebom/ghq/github.com/zerebom/pm-docs status --short)",
+      "Bash(git -C /Users/zerebom/ghq/github.com/zerebom/pm-docs log --oneline -5)",
+      "Bash(wtp add:*)",
+      "Bash(open:*)",
+      "Skill(log)",
+      "WebFetch(domain:github.com)",
+      "Skill(doc-rewriter)",
+      "Bash(uv cache clean:*)",
+      "mcp__linear-server__get_team",
+      "mcp__linear-server__list_users",
+      "Bash(python3:*)",
+      "mcp__serena__read_memory",
+      "Bash(test:*)",
+      "Skill(creating-prd)",
+      "Skill(instant-english-translation)",
+      "Bash(cmux:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/*)",
+      "Bash(rm -rf /*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "enableAllProjectMcpServers": false,
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"確認待ちです\" with title \"Claude Code\" subtitle \"許可を求めています\"'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"作業が完了しました\" with title \"Claude Code\"'"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "python3 /Users/zerebom/.claude/statusline-command.py"
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "using-cmux@hummer98-using-cmux": true
+  },
+  "extraKnownMarketplaces": {
+    "hummer98-using-cmux": {
+      "source": {
+        "source": "github",
+        "repo": "hummer98/using-cmux"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "autoMemoryEnabled": false,
+  "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true,
+  "preferredNotifChannel": "ghostty"
+}

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Cursor の user settings (settings.json / keybindings.json / snippets/) を
+# home/Library/.../Cursor/User/ にコピーする。
+#
+# 旧PC（設定が最新の PC）で叩く想定。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SRC="$HOME/Library/Application Support/Cursor/User"
+DST="$REPO_ROOT/home/Library/Application Support/Cursor/User"
+
+if [ ! -d "$SRC" ]; then
+  echo "ERROR: $SRC が存在しない（Cursor 未起動 or 別パス?）" >&2
+  exit 1
+fi
+
+mkdir -p "$DST"
+
+copied=0
+skipped=0
+for name in settings.json keybindings.json; do
+  if [ -f "$SRC/$name" ]; then
+    cp -p "$SRC/$name" "$DST/$name"
+    copied=$((copied+1))
+  else
+    skipped=$((skipped+1))
+  fi
+done
+
+# snippets/ ディレクトリ（個別ファイル単位でコピー）
+if [ -d "$SRC/snippets" ]; then
+  mkdir -p "$DST/snippets"
+  cp -p "$SRC/snippets"/*.json "$DST/snippets/" 2>/dev/null && \
+    copied=$((copied + $(ls "$DST/snippets" 2>/dev/null | wc -l | tr -d ' ')))
+fi
+
+echo "captured Cursor: copied=$copied to $DST"

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+{{- if eq .chezmoi.os "darwin" }}
+{{- $plist := joinPath .chezmoi.sourceDir ".assets/dock.plist" -}}
+{{- if stat $plist }}
+set -euo pipefail
+
+# dock.plist hash: {{ include ".assets/dock.plist" | sha256sum }}
+
+PLIST="{{ $plist }}"
+
+if [ ! -f "$PLIST" ]; then
+  echo "dock plist not found, skip"
+  exit 0
+fi
+
+echo "==> applying Dock layout from $PLIST"
+defaults import com.apple.dock "$PLIST"
+
+# Dock 再起動で反映
+killall Dock 2>/dev/null || true
+echo "Dock applied"
+{{- else }}
+echo "no .assets/dock.plist (capture-dock 未実行 or 旧PC で push 待ち)"
+{{- end }}
+{{- end }}

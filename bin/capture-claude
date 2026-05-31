@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Claude Code のカスタマイズ（agents / commands / skills / output-styles / settings.json）を
+# home/dot_claude/ にコピーする。
+#
+# 旧PC（設定が最新の PC）で叩く想定。CLAUDE.md は別途 chezmoi で管理済みなので除外。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SRC="$HOME/.claude"
+DST="$REPO_ROOT/home/dot_claude"
+
+if [ ! -d "$SRC" ]; then
+  echo "ERROR: $SRC が存在しない（Claude Code 未インストール?）" >&2
+  exit 1
+fi
+
+mkdir -p "$DST"
+
+copied=0
+# settings.json（CLAUDE.md とは別）
+if [ -f "$SRC/settings.json" ]; then
+  cp -p "$SRC/settings.json" "$DST/settings.json"
+  copied=$((copied+1))
+fi
+
+# カスタマイズディレクトリ4種
+for d in agents commands skills output-styles; do
+  if [ -d "$SRC/$d" ]; then
+    rm -rf "$DST/$d"
+    cp -Rp "$SRC/$d" "$DST/$d"
+    n=$(find "$DST/$d" -type f 2>/dev/null | wc -l | tr -d ' ')
+    copied=$((copied + n))
+  fi
+done
+
+echo "captured Claude Code: $copied files (excluding sessions/cache/history)"

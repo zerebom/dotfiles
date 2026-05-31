@@ -1,0 +1,69 @@
+# ===========================================
+# Ghostty Configuration
+# ===========================================
+
+# -------------------------------------------
+# Shell / Command
+# -------------------------------------------
+# tmux auto-start: 各ウィンドウで独立したセッションを作成
+# $$ (シェルのPID) でユニークなセッション名を生成し、ウィンドウ間の同期を防ぐ
+# cmux 内では tmux を起動しない（cmux 自体がマルチプレクサなので二重起動になる）
+command = /bin/sh -c 'if [ -n "$CMUX_WORKSPACE_ID" ]; then exec zsh -l; else /opt/homebrew/bin/tmux new-session -s "main-$$"; fi'
+
+# -------------------------------------------
+# Theme / Color Scheme
+# -------------------------------------------
+# TokyoNight: 人気の暗めカラースキーム
+theme = TokyoNight
+
+# -------------------------------------------
+# Window Settings
+# -------------------------------------------
+# 起動時にウィンドウを最大化
+maximize = true
+
+# 背景の不透明度 (0.0-1.0)
+# 0.8 = 20%透過
+background-opacity = 0.8
+
+# 透過背景にブラー効果を適用
+background-blur = true
+
+# macOSのタイトルバースタイル
+# tabs: タブ形式で表示
+macos-titlebar-style = tabs
+
+# -------------------------------------------
+# Font Settings
+# -------------------------------------------
+# PlemolJP35 Console NF: 日本語対応 + Nerd Fonts アイコン
+font-family = PlemolJP35 Console NF
+
+# フォントサイズ (pt)
+font-size = 20
+
+# フォントを太く表示 (macOSで視認性向上)
+font-thicken = true
+
+# セルの高さを調整 (行間を広げる)
+adjust-cell-height = 2
+
+# -------------------------------------------
+# Key Bindings
+# -------------------------------------------
+# Vim風のペイン移動
+keybind = ctrl+h=goto_split:left
+keybind = ctrl+l=goto_split:right
+
+# Claude Code用: 改行を送信
+keybind = shift+enter=text:\x0a
+keybind = ctrl+j=text:\x0a
+
+# -------------------------------------------
+# Shell Integration
+# -------------------------------------------
+# 新規ウィンドウで現在の作業ディレクトリを継承
+window-inherit-working-directory = true
+
+# シェル統合を自動検出
+shell-integration = detect

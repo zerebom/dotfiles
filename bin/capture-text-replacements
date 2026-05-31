@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Text Replacements / ユーザ辞書（System Settings → Keyboard → Text Replacements、
+# 日本語IMEの単語登録もここに同居）を home/.assets/text-replacements.plist に
+# {root: {NSUserDictionaryReplacementItems: array}} 形式で書き出す。
+#
+# 復元は run_onchange_after_apply-text-replacements.sh.tmpl が PlistBuddy で行う。
+# iCloud にサインインしてると自動同期されるが、明示的に repo で持たせる。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$REPO_ROOT/home/.assets/text-replacements.plist"
+
+mkdir -p "$(dirname "$OUT")"
+
+GLOBAL_PLIST="$HOME/Library/Preferences/.GlobalPreferences.plist"
+
+# NSUserDictionaryReplacementItems キーを単独で XML plist として抽出
+# plutil -extract で <dict> 配下のキーだけを取り出せる
+if plutil -extract NSUserDictionaryReplacementItems xml1 -o "$OUT" "$GLOBAL_PLIST" 2>/dev/null; then
+  count=$(grep -c '<dict>' "$OUT" || true)
+else
+  # キーが存在しない場合（未登録）は空 array
+  cat > "$OUT" <<'EMPTY'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array/>
+</plist>
+EMPTY
+  count=0
+fi
+
+echo "captured Text Replacements: ${count} items → $OUT"

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# ghq でクローン済みのリポジトリ一覧を home/.assets/ghq-repos.txt に保存。
+# 復元は run_once_after_clone-ghq-repos.sh.tmpl が xargs ghq get で行う。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$REPO_ROOT/home/.assets/ghq-repos.txt"
+
+mkdir -p "$(dirname "$OUT")"
+
+if ! command -v ghq >/dev/null 2>&1; then
+  echo "ERROR: ghq not found" >&2
+  exit 1
+fi
+
+ghq list > "$OUT"
+echo "captured ghq: $(wc -l < "$OUT" | tr -d ' ') repos → $OUT"

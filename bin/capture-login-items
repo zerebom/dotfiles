@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# 自動起動アプリ（Login Items）を YAML に書き出す。
+# 復元は run_onchange_after_apply-login-items.sh.tmpl が osascript で行う。
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$REPO_ROOT/home/.chezmoidata/login-items.yaml"
+
+mkdir -p "$(dirname "$OUT")"
+
+# osascript で path / hidden を1行に出して整形
+items_json="$(osascript -ss <<'OSA'
+tell application "System Events"
+  set theItems to every login item
+  set output to ""
+  repeat with li in theItems
+    set output to output & (path of li) & "\t" & (hidden of li as string) & "\n"
+  end repeat
+  return output
+end tell
+OSA
+)"
+
+# osascript -ss はクォートとエスケープした文字列を返すので、リテラル化しなおす
+clean="$(printf '%s' "$items_json" | sed -E 's/^"|"$//g; s/\\"/"/g; s/\\\\/\\/g; s/\\n/\n/g; s/\\t/\t/g')"
+
+{
+  echo "# Login Items snapshot"
+  echo "# capture: $(date '+%Y-%m-%d %H:%M:%S') on $(scutil --get ComputerName 2>/dev/null || hostname)"
+  echo "loginItems:"
+  while IFS=$'\t' read -r path_value hidden_value; do
+    [ -z "$path_value" ] && continue
+    printf '  - { path: "%s", hidden: %s }\n' "$path_value" "${hidden_value:-false}"
+  done <<<"$clean"
+} > "$OUT"
+
+echo "captured Login Items: $(grep -c '^  -' "$OUT") items → $OUT"

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+{{- $list := joinPath .chezmoi.sourceDir ".assets/ghq-repos.txt" -}}
+{{- if stat $list }}
+set -euo pipefail
+
+# ghq-repos hash: {{ include ".assets/ghq-repos.txt" | sha256sum }}
+
+LIST="{{ $list }}"
+
+if ! command -v ghq >/dev/null 2>&1; then
+  echo "ghq not found, skip"
+  exit 0
+fi
+
+if [ ! -s "$LIST" ]; then
+  echo "ghq-repos.txt is empty, skip"
+  exit 0
+fi
+
+count=$(wc -l < "$LIST" | tr -d ' ')
+echo "==> ghq get で $count 個のリポジトリを並列クローン（既存は skip）"
+
+# ghq list の出力（github.com/owner/name）を `ghq get` で再取得
+# 並列度4、失敗しても他は続行
+xargs -P 4 -n 1 -I {} ghq get -p {} < "$LIST" || true
+
+echo "ghq clone done"
+{{- else }}
+echo "no .assets/ghq-repos.txt (capture-ghq 未実行 or 旧PC で push 待ち)"
+{{- end }}

@@ -1,0 +1,27 @@
+{{/*
+  chezmoi data 生成テンプレ
+  参照: design.md「ホスト分岐の設計」
+  ホスト名は scutil --get ComputerName を優先、取れない場合は .chezmoi.hostname にフォールバック
+*/}}
+{{- $computerName := "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $computerName = output "scutil" "--get" "ComputerName" | trim -}}
+{{- else -}}
+{{-   $computerName = .chezmoi.hostname -}}
+{{- end -}}
+
+[data]
+  computerName = {{ $computerName | quote }}
+{{- if or (eq $computerName "CMPC0397") (eq .chezmoi.hostname "CMPC0397") }}
+  hostType = "work-new"
+  isWork = true
+  email = "higuchi.kokoro@commune.co.jp"
+{{- else if or (eq $computerName "CMPC0113") (eq .chezmoi.hostname "CMPC0113") }}
+  hostType = "work-old"
+  isWork = true
+  email = "higuchi.kokoro@commune.co.jp"
+{{- else }}
+  hostType = "personal"
+  isWork = false
+  email = "higukkr@gmail.com"
+{{- end }}
