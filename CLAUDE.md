@@ -29,18 +29,32 @@ make install
 ### Core Structure
 The repository uses a symlink-based approach where configuration files are stored in `~/.dotfiles/` and symlinked to their expected locations in the home directory.
 
-## CRITICAL: 編集は必ずこのリポジトリ内のファイルに対して行う
+## CRITICAL: 設定修正は必ずこのリポジトリ内のソースを編集する（ホーム側の実ファイルを直接いじらない）
 
-このリポジトリは symlink ベースで運用されている。各設定ファイル / ディレクトリ（例: `~/.config/nvim` → `<repo>/nvim`、`~/.zshrc` → `<repo>/.zshrc`）は、ホームディレクトリ側がリンクで、**実体はこのリポジトリ内**にある。
+nvim / zsh などの設定修正を任されたとき、**ホームディレクトリ側の適用先（`~/.config/nvim`、`~/.zshrc` 等）を直接書き換えてはいけない**。必ずこのリポジトリ内のソースを編集し、反映手順を経てリンク先 / 適用先に波及させる。リンク先や適用後の実ファイルを直接いじると git 管理から外れ、変更が追跡できなくなる。
 
-そのため nvim / zsh などの設定修正を任されたときは、以下を厳守すること:
+このリポジトリは **2つの管理方式が混在** しているので、対象ごとに編集場所と反映方法が違う。
 
-- **必ずこのリポジトリ内のファイルを編集する**（例: `<repo>/nvim/lua/...`、`<repo>/.zshrc`）。symlink 元を直すことで、リンク先（`~/.config/nvim` 等）にも自動的に修正が波及する。
-- **リンクの実体パス（ホーム側の解決済みパス）を「別ファイル」として直接書き換えない**。symlink を踏んでホーム側を編集しても結局リポジトリ内ファイルを編集しているだけだが、リポジトリ外に実体コピーを作る／リンクを実ファイルに置き換えるような操作は禁止。それをやると git 管理から外れ、変更が追跡できなくなる。
-- 新規に設定ファイル/ディレクトリを追加した場合は、リポジトリ直下に置いたうえで `make install`（`ln -snf` でホームに symlink を張る）で反映する。
-- 編集後は `git status` / `git diff` でリポジトリ内に差分が出ていることを確認する。差分が出ていなければ、リポジトリ外の実ファイルを誤って編集している可能性がある。
+### 1. nvim（symlink 方式）
+- 実体は **リポジトリ直下の `nvim/`**。`~/.config/nvim` → `<repo>/nvim` の symlink（`home/run_once_after_setup-nvim-symlink.sh.tmpl` が張る）。
+- **`<repo>/nvim/...` を直接編集すれば、symlink 経由でそのまま反映される**（`make` 等の追加操作は不要）。
+- `~/.config/nvim/...` を「別ファイル」として開いて編集しない（symlink を踏んでいるだけだが、混乱と事故の元）。
 
-要するに: **「dotfiles（リポジトリ実体）を直す → symlink 経由でリンク先に波及」** が正しいフロー。リンク先を実ファイルとして直接いじるのは NG。
+### 2. zsh / ghostty / karabiner / claude 設定など（chezmoi 方式）
+- source-state は **`home/` 配下**（`.chezmoiroot` = `home`）。chezmoi 命名規則でファイル名が決まる:
+  - `~/.zshrc` ← `home/dot_zshrc`、`~/.zshenv` ← `home/dot_zshenv.tmpl`
+  - `~/.zsh/aliases.zsh` ← `home/dot_zsh/aliases.zsh`
+  - `~/.config/ghostty/config` ← `home/dot_config/ghostty/config`
+  - `~/.claude/...` ← `home/dot_claude/...`
+  - `*.tmpl` は Go テンプレート。`{{ }}` を壊さないよう注意。
+- **`home/dot_*` のソースを編集 → `make apply`（= `chezmoi apply`）で反映**する。ホーム側の適用後ファイルを直接編集しない。
+- 反映前に `make diff`（= `chezmoi diff`）で差分を確認できる。
+- 管理対象パスは `make list`（= `chezmoi managed`）で確認できる。
+- 注意: リポジトリ直下にも `.zshrc` / `.zsh` 等が残っているが、これは旧 symlink 方式の名残。chezmoi 管理対象の zsh 系は `home/dot_zshrc` / `home/dot_zsh/` が正。どちらが現在ホームに効いているか不明なときは `readlink ~/.zshrc` と `make list` で確認すること。
+
+### 共通ルール
+- 編集後は `git status` / `git diff` で **リポジトリ内に差分が出ていること** を確認する。差分が出ていなければ、ホーム側の実ファイルを誤って編集している可能性がある。
+- 要するに: **「リポジトリ内のソースを直す → (nvim は symlink で自動 / chezmoi は `make apply` で) リンク先・適用先に波及」** が正しいフロー。適用先の実ファイルを直接いじるのは NG。
 
 ### Zsh Configuration
 - **`.zshrc`** - Main configuration that loads modular components
