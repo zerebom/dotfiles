@@ -92,7 +92,7 @@ zle -N fshow
 #bindkey '^S' fshow
 
 zle -N peco-history-selection
-bindkey '^R' peco-history-selection
+# bindkey '^R' peco-history-selection  # Disabled: conflicts with atuin
 
 zle -N ghq-fzf
 bindkey '^]' ghq-fzf

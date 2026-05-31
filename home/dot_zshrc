@@ -321,7 +321,14 @@ conda() {
 # <<< conda initialize <<<
 
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# fzf シェル統合（Ctrl-T: ファイル, Ctrl-R: 履歴, Alt-C: cd）
+# fzf >= 0.48 では ~/.fzf.zsh は廃止。`fzf --zsh` で keybindings/completion を読み込む。
+# 注: この後ろで atuin init が走り Ctrl-R を上書きする（履歴は atuin が担当）。
+if command -v fzf >/dev/null 2>&1; then
+  source <(fzf --zsh)
+elif [ -f ~/.fzf.zsh ]; then
+  source ~/.fzf.zsh
+fi
 export GOENV_ROOT="$HOME/.goenv"
 export PATH="$GOENV_ROOT/bin:$PATH"
 export PATH="$HOME/go/1.16.0/bin:$PATH"
@@ -502,8 +509,9 @@ export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
 export FZF_CTRL_T_COMMAND='fd --type f --type d --hidden --exclude .git'
 export FZF_CTRL_T_OPTS="
   --preview 'bat -n --color=always --line-range :500 {} 2>/dev/null || ls -la {}'
-  --bind 'ctrl-y:execute-silent(echo -n {} | pbcopy)+abort'
-  --header 'CTRL-Y: copy path'"
+  --bind 'ctrl-y:execute-silent(printf %s \"\$(realpath -- {})\" | pbcopy)+abort'
+  --bind 'alt-y:execute-silent(printf %s {} | pbcopy)+abort'
+  --header 'CTRL-Y: copy ABSOLUTE path / ALT-Y: relative'"
 export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
 export FZF_ALT_C_OPTS="--preview 'ls -la {}'"
 
@@ -515,8 +523,9 @@ fzf-grep-widget() {
     | fzf --ansi --delimiter : \
         --preview 'bat -n --color=always --highlight-line {2} {1} 2>/dev/null' \
         --preview-window 'up,60%,+{2}-10' \
-        --bind 'ctrl-y:execute-silent(echo -n {1}:{2} | pbcopy)+abort' \
-        --header 'Enter: open in editor / CTRL-Y: copy path:line')
+        --bind 'ctrl-y:execute-silent(printf %s "$(realpath -- {1}):{2}" | pbcopy)+abort' \
+        --bind 'alt-y:execute-silent(printf %s {1}:{2} | pbcopy)+abort' \
+        --header 'Enter: open / CTRL-Y: copy ABSOLUTE path:line / ALT-Y: relative')
   if [[ -n "$result" ]]; then
     local file line
     file=$(echo "$result" | cut -d: -f1)
@@ -528,6 +537,24 @@ fzf-grep-widget() {
 }
 zle -N fzf-grep-widget
 bindkey '^F' fzf-grep-widget
+
+# pwp: print working path — 今いる場所（または指定ファイル）の絶対パスをクリップボードへ
+#   pwp        → カレントディレクトリの絶対パス
+#   pwp <path> → 指定ファイル/ディレクトリの絶対パス
+pwp() {
+  local target="${1:-.}" abs
+  # builtin cd を使う: 独自 cd 関数（eza 自動 ls）の出力が混入するのを防ぐ
+  if [[ -d "$target" ]]; then
+    abs=$(builtin cd "$target" 2>/dev/null && pwd)
+  elif [[ -e "$target" ]]; then
+    abs="$(builtin cd "$(dirname "$target")" 2>/dev/null && pwd)/$(basename "$target")"
+  else
+    echo "pwp: no such file or directory: $target" >&2
+    return 1
+  fi
+  printf %s "$abs" | pbcopy
+  echo "copied to clipboard: $abs"
+}
 
 # Taskwarrior + Timewarrior
 alias task='/opt/homebrew/bin/task'

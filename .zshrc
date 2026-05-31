@@ -157,7 +157,11 @@ widget::ghq::session() {
         session_name="${selected##*/}"
     fi
 
-    if [ -z "$TMUX" ]; then
+    if [ -n "$CMUX_WORKSPACE_ID" ]; then
+        # cmux 内では tmux を挟まず cd のみ（tmux が入るとソケット認証が通らなくなる）
+        BUFFER="cd ${(q)repo_dir}"
+        zle accept-line
+    elif [ -z "$TMUX" ]; then
         BUFFER="tmux new-session -A -s ${(q)session_name} -c ${(q)repo_dir}"
         zle accept-line
     elif [ "$(tmux display-message -p "#S")" = "$session_name" ] && [ "$PWD" != "$repo_dir" ]; then
@@ -181,7 +185,7 @@ zle -N widget::ghq::dir
 zle -N widget::ghq::session
 zle -N forward-kill-word
 
-bindkey "^R"        widget::history                 # C-r
+# bindkey "^R"        widget::history                 # C-r (Disabled: conflicts with atuin)
 bindkey "^G"        widget::ghq::session            # C-g
 bindkey "^[g"       widget::ghq::dir                # Alt-g
 bindkey "^A"        beginning-of-line               # C-a
@@ -317,7 +321,14 @@ conda() {
 # <<< conda initialize <<<
 
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# fzf シェル統合（Ctrl-T: ファイル, Ctrl-R: 履歴, Alt-C: cd）
+# fzf >= 0.48 では ~/.fzf.zsh は廃止。`fzf --zsh` で keybindings/completion を読み込む。
+# 注: この後ろで atuin init が走り Ctrl-R を上書きする（履歴は atuin が担当）。
+if command -v fzf >/dev/null 2>&1; then
+  source <(fzf --zsh)
+elif [ -f ~/.fzf.zsh ]; then
+  source ~/.fzf.zsh
+fi
 export GOENV_ROOT="$HOME/.goenv"
 export PATH="$GOENV_ROOT/bin:$PATH"
 export PATH="$HOME/go/1.16.0/bin:$PATH"
@@ -396,8 +407,9 @@ zinit light-mode for \
 
 ## plugins(zinit)
 ## Plugin history-search-multi-word loaded with investigating.
-zinit ice wait"1" lucid
-zinit load zdharma-continuum/history-search-multi-word
+# Disabled: conflicts with atuin
+# zinit ice wait"1" lucid
+# zinit load zdharma-continuum/history-search-multi-word
 
 # Two regular plugins loaded without investigating.
 zinit ice wait"0a" lucid atload"_zsh_autosuggest_start"
@@ -422,7 +434,7 @@ zinit light simnalamburt/shellder
 
 # pnpm
 # pnpm
-export PNPM_HOME="/Users/zerebom/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -435,12 +447,12 @@ eval "$(fnm env --use-on-cd)"
 # compinit は .zshenvまたは他の場所で一度だけ実行
 
 
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 
 
 # bun completions
-[ -s "/Users/zerebom/.bun/_bun" ] && source "/Users/zerebom/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
@@ -470,6 +482,97 @@ export PATH="$PATH:/path/to/osascript"
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
 
 # Added by Antigravity
-export PATH="/Users/zerebom/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
+# zoxide - スマートディレクトリジャンプ
+if command -v zoxide >/dev/null 2>&1; then
+    # 環境変数設定（eval より前に定義）
+    export _ZO_ECHO=1                           # 移動先を表示
+    export _ZO_FZF_OPTS="--height=40% --reverse --border --preview='eza -l -h --git --group --group-directories-first {2}' --preview-window=right:50%"
 
+    # zoxide初期化
+    eval "$(zoxide init zsh)"
+
+    # エイリアス（注: zi は zinit と競合するため zf を使用）
+    alias zf='__zoxide_zi'  # fzf でインタラクティブ選択
+    alias zz='z -'          # 直前のディレクトリに戻る
+fi
+
+# atuin - 高機能シェル履歴管理
+if command -v atuin >/dev/null 2>&1; then
+    # atuin初期化（^R キーバインドを上書き）
+    eval "$(atuin init zsh)"
+fi
+
+# fzf: fd をバックエンドに（高速 + .gitignore 尊重）
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+export FZF_CTRL_T_COMMAND='fd --type f --type d --hidden --exclude .git'
+export FZF_CTRL_T_OPTS="
+  --preview 'bat -n --color=always --line-range :500 {} 2>/dev/null || ls -la {}'
+  --bind 'ctrl-y:execute-silent(printf %s \"\$(realpath -- {})\" | pbcopy)+abort'
+  --bind 'alt-y:execute-silent(printf %s {} | pbcopy)+abort'
+  --header 'CTRL-Y: copy ABSOLUTE path / ALT-Y: relative'"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
+export FZF_ALT_C_OPTS="--preview 'ls -la {}'"
+
+# fzf: ファイル内容検索 (Ctrl+F)
+# rg で中身を検索 → fzf で絞り込み → Enter で該当行をエディタで開く
+fzf-grep-widget() {
+  local result
+  result=$(rg --color=always --line-number --no-heading '' 2>/dev/null \
+    | fzf --ansi --delimiter : \
+        --preview 'bat -n --color=always --highlight-line {2} {1} 2>/dev/null' \
+        --preview-window 'up,60%,+{2}-10' \
+        --bind 'ctrl-y:execute-silent(printf %s "$(realpath -- {1}):{2}" | pbcopy)+abort' \
+        --bind 'alt-y:execute-silent(printf %s {1}:{2} | pbcopy)+abort' \
+        --header 'Enter: open / CTRL-Y: copy ABSOLUTE path:line / ALT-Y: relative')
+  if [[ -n "$result" ]]; then
+    local file line
+    file=$(echo "$result" | cut -d: -f1)
+    line=$(echo "$result" | cut -d: -f2)
+    BUFFER="${EDITOR:-vim} +${line} ${file}"
+    zle accept-line
+  fi
+  zle reset-prompt
+}
+zle -N fzf-grep-widget
+bindkey '^F' fzf-grep-widget
+
+# pwp: print working path — 今いる場所（または指定ファイル）の絶対パスをクリップボードへ
+#   pwp        → カレントディレクトリの絶対パス
+#   pwp <path> → 指定ファイル/ディレクトリの絶対パス
+pwp() {
+  local target="${1:-.}" abs
+  # builtin cd を使う: 独自 cd 関数（eza 自動 ls）の出力が混入するのを防ぐ
+  if [[ -d "$target" ]]; then
+    abs=$(builtin cd "$target" 2>/dev/null && pwd)
+  elif [[ -e "$target" ]]; then
+    abs="$(builtin cd "$(dirname "$target")" 2>/dev/null && pwd)/$(basename "$target")"
+  else
+    echo "pwp: no such file or directory: $target" >&2
+    return 1
+  fi
+  printf %s "$abs" | pbcopy
+  echo "copied to clipboard: $abs"
+}
+
+# Taskwarrior + Timewarrior
+alias task='/opt/homebrew/bin/task'
+alias tw='/opt/homebrew/bin/task'
+alias twa='/opt/homebrew/bin/task add'
+alias twd='/opt/homebrew/bin/task done'
+alias tws='/opt/homebrew/bin/task start'
+alias twx='/opt/homebrew/bin/task stop'
+alias twdel='/opt/homebrew/bin/task delete'
+alias twf='/opt/homebrew/bin/task focus'
+alias twt='/opt/homebrew/bin/task done_today'
+alias tww='/opt/homebrew/bin/task completed end.after:today-7d'
+alias timew='/opt/homebrew/bin/timew'
+alias twm='/opt/homebrew/bin/task modify'
+alias twu='/opt/homebrew/bin/task undo'
+alias twtime='timew summary today'
+alias twweek='timew summary :week'
+pomo() { tw $1 start && (sleep 1500 && say "ポモドーロ終了" && tw $1 stop &) }
+
+# Deno
+export PATH="$HOME/.deno/bin:$PATH"
