@@ -33,3 +33,6 @@ opt.undofile = true
 -- Encoding
 opt.encoding = "utf-8"
 opt.fileencoding = "utf-8"
+
+-- Auto-reload files changed outside of Neovim
+opt.autoread = true
