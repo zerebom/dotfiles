@@ -13,8 +13,9 @@ command = /bin/sh -c 'if [ -n "$CMUX_WORKSPACE_ID" ]; then exec zsh -l; else /op
 # -------------------------------------------
 # Theme / Color Scheme
 # -------------------------------------------
-# TokyoNight: 人気の暗めカラースキーム
-theme = TokyoNight
+# Catppuccin Frappe: nvim(catppuccin frappe)と統一。
+# nvim を transparent_background にしているので、この背景色が nvim 内にも透ける。
+theme = Catppuccin Frappe
 
 # -------------------------------------------
 # Window Settings
@@ -23,8 +24,8 @@ theme = TokyoNight
 maximize = true
 
 # 背景の不透明度 (0.0-1.0)
-# 0.8 = 20%透過
-background-opacity = 0.8
+# 0.95 = 5%透過
+background-opacity = 0.95
 
 # 透過背景にブラー効果を適用
 background-blur = true
@@ -40,7 +41,7 @@ macos-titlebar-style = tabs
 font-family = PlemolJP35 Console NF
 
 # フォントサイズ (pt)
-font-size = 20
+font-size = 16
 
 # フォントを太く表示 (macOSで視認性向上)
 font-thicken = true
