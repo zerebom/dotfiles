@@ -132,6 +132,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "claude-fable-5[1m]",
   "enableAllProjectMcpServers": false,
   "hooks": {
     "Notification": [
@@ -141,6 +142,18 @@
           {
             "type": "command",
             "command": "osascript -e 'display notification \"確認待ちです\" with title \"Claude Code\" subtitle \"許可を求めています\"'"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/higuchi.kokoro/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
           }
         ]
       }
@@ -159,7 +172,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "python3 /Users/zerebom/.claude/statusline-command.py"
+    "command": "~/.claude/statusline.py"
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
@@ -175,10 +188,11 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "tui": "default",
   "autoMemoryEnabled": false,
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "ghostty",
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true,
-  "preferredNotifChannel": "ghostty"
+  "voiceEnabled": true
 }
