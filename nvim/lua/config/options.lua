@@ -21,6 +21,10 @@ opt.tabstop = 2
 opt.shiftwidth = 2
 opt.smartindent = true
 
+-- Line wrapping (LazyVim はデフォルト nowrap なので上書き)
+opt.wrap = true
+opt.linebreak = true -- 単語の途中で折り返さない
+
 -- UI
 opt.cursorline = true
 opt.termguicolors = true

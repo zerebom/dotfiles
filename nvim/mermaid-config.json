@@ -1,0 +1,14 @@
+{
+  "theme": "dark",
+  "themeVariables": {
+    "fontSize": "16px"
+  },
+  "sequence": {
+    "diagramMarginX": 40,
+    "diagramMarginY": 20,
+    "actorMargin": 60,
+    "width": 200,
+    "height": 80,
+    "messageMargin": 40
+  }
+}
