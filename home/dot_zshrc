@@ -14,6 +14,11 @@ bindkey "^U" backward-kill-line
 source $HOME/.zsh/function.zsh
 source $HOME/.zsh/fzf.zsh
 
+# ローカル専用シークレット（APIキー等）。git/chezmoi 管理外のため、ここには
+# source 行だけを置きコミットする。鍵の実体は ~/.config/zsh/secrets.zsh に
+# 各マシンで手置きする（chmod 600 / 存在すれば読む）。
+[[ -f "$HOME/.config/zsh/secrets.zsh" ]] && source "$HOME/.config/zsh/secrets.zsh"
+
 export STARSHIP_CONFIG=~/.starship.toml
 eval "$(starship init zsh)"
 
@@ -157,8 +162,8 @@ widget::ghq::session() {
         session_name="${selected##*/}"
     fi
 
-    if [ -n "$CMUX_WORKSPACE_ID" ]; then
-        # cmux 内では tmux を挟まず cd のみ（tmux が入るとソケット認証が通らなくなる）
+    if [ -n "$CMUX_WORKSPACE_ID" ] || [ -n "$HERDR_ENV" ]; then
+        # cmux / herdr 内では tmux を挟まず cd のみ（tmux が入るとソケット認証が通らなくなる）
         BUFFER="cd ${(q)repo_dir}"
         zle accept-line
     elif [ -z "$TMUX" ]; then
@@ -576,3 +581,4 @@ pomo() { tw $1 start && (sleep 1500 && say "ポモドーロ終了" && tw $1 stop
 
 # Deno
 export PATH="$HOME/.deno/bin:$PATH"
+

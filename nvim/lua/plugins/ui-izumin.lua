@@ -1,23 +1,46 @@
 -- izumin さんの見た目を LazyVim 上で再現する UI セット。
 -- 元ネタ: https://zenn.dev/layerx/articles/8c29b0367238b8
---   - catppuccin(mocha) カラースキーム
+-- 実際の dotfiles: https://github.com/izumin5210/dotfiles
+--   - catppuccin(frappe) カラースキーム + 背景透過
+--     → ターミナル(ghostty: theme = Catppuccin Frappe)の背景が nvim 内に透けて
+--       エディタもターミナルも frappe で統一される。透過を切ると不透明 frappe(#303446)。
 --   - 下のステータスライン(lualine)を消し、隅の incline にファイル情報を集約
 --   - modes.nvim でモードごとに現在行の色を変える
 --   - vimade で非アクティブな窓を薄くする
 -- 元の LazyVim の見た目に戻したいときは、このファイルを消すか各 enabled を切り替える。
 
+-- incline / modes で参照する flavour。色を別 flavour に振りたいときはここだけ変える。
+local FLAVOUR = "frappe"
+
 return {
   -----------------------------------------------------------------------------
-  -- 1. カラースキーム: catppuccin (mocha)
+  -- 1. カラースキーム: catppuccin (frappe) + 背景透過
   -----------------------------------------------------------------------------
   {
     "catppuccin/nvim",
     name = "catppuccin",
-    opts = { flavour = "mocha" },
+    opts = {
+      flavour = FLAVOUR,
+      transparent_background = true,
+      float = { transparent = true, solid = true },
+      integrations = {
+        snacks = { enabled = true },
+        illuminate = { enabled = true, lsp = true },
+        flash = true,
+        gitsigns = true,
+        noice = true,
+        notify = true,
+        treesitter_context = true,
+        which_key = true,
+      },
+    },
   },
   {
     "LazyVim/LazyVim",
-    opts = { colorscheme = "catppuccin" },
+    -- CRITICAL: "catppuccin" だと Neovim 0.12 同梱の colors/catppuccin.vim
+    -- (mocha 固定・透過なし)が衝突して勝ってしまう。プラグイン正式エントリの
+    -- "catppuccin-nvim" を使うこと(flavour/transparent は上の opts が効く)。
+    opts = { colorscheme = "catppuccin-nvim" },
   },
 
   -----------------------------------------------------------------------------
@@ -34,7 +57,7 @@ return {
     event = "VeryLazy",
     config = function()
       local ok, palette = pcall(require, "catppuccin.palettes")
-      local C = ok and palette.get_palette("mocha") or {}
+      local C = ok and palette.get_palette(FLAVOUR) or {}
       local devicons = require("nvim-web-devicons")
 
       local function diagnostics(props)
@@ -88,7 +111,7 @@ return {
     event = "VeryLazy",
     config = function()
       local ok, palette = pcall(require, "catppuccin.palettes")
-      local C = ok and palette.get_palette("mocha") or {}
+      local C = ok and palette.get_palette(FLAVOUR) or {}
       require("modes").setup({
         colors = {
           copy = C.yellow or "#f5e0dc",

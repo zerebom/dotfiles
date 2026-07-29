@@ -1,0 +1,44 @@
+onboarding = false
+# herdr configuration
+# cmux/tmux (home/dot_tmux.conf) で慣れた操作感にできるだけ寄せるための上書き。
+# 未指定のキーは `herdr --default-config` のデフォルトに従う。
+
+[keys]
+# home/dot_tmux.conf で prefix を ctrl+b から ctrl+s に変更済みなので herdr も合わせる
+prefix = "ctrl+s"
+
+# ペイン移動 hjkl (デフォルトと同じ値だが tmux の bind-key hjkl に合わせて明示)
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# タブ切り替え: 指の動きは tmux の `bind-key -r C-h/C-l select-window` と同じ。
+# Karabiner が左Ctrl+hjkl をグローバルに矢印へ変換するため、herdr には ctrl+h/l は
+# 届かず ←/→ が届く。なのでバインドは矢印キー側に張る（素の矢印キーでも動く）。
+previous_tab = "prefix+left"
+next_tab = "prefix+right"
+
+# space（workspace）移動: Ctrl+s → Ctrl+k(上) / Ctrl+j(下)。同じく実体は矢印キー。
+previous_workspace = "prefix+up"
+next_workspace = "prefix+down"
+
+# エージェント巡回: ctrl+h/l を矢印に移して空いた p/n を割り当て
+previous_agent = "prefix+p"
+next_agent = "prefix+n"
+
+# 分割: tmux の `bind-key | split-window -h` / `bind-key - split-window -v` にキーを合わせる。
+# NOTE: split_vertical/split_horizontal のどちらが左右(side-by-side)/上下(stacked)になるかは
+# CLI からは検証できなかった。適用後に実際に prefix+| と prefix+- を試し、tmux と逆なら入れ替える。
+split_horizontal = "prefix+minus"
+split_vertical = "prefix+|"
+
+# tmux の prefix+v (copy-mode 突入) の役割を、herdr のスクロールバック編集機能に寄せる
+edit_scrollback = "prefix+v"
+
+[theme]
+name = "tokyo-night"
+auto_switch = false
+
+[ui]
+agent_panel_sort = "priority"
