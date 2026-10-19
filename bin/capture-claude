@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude Code のカスタマイズ（agents / commands / skills / output-styles / settings.json）を
+# Claude Code のカスタマイズ（agents / commands / skills / output-styles / hooks / settings.json）を
 # home/dot_claude/ にコピーする。
 #
 # 旧PC（設定が最新の PC）で叩く想定。CLAUDE.md は別途 chezmoi で管理済みなので除外。
@@ -33,5 +33,13 @@ for d in agents commands skills output-styles; do
     copied=$((copied + n))
   fi
 done
+
+# hooks は実行権限が要るので、executable_ 接頭辞を chezmoi に付けさせる。
+# rm してからコピーすると、リポジトリにしかないファイル（lang-guard-fixtures など）が消える
+if [ -d "$SRC/hooks" ]; then
+  chezmoi add "$SRC/hooks"
+  n=$(find "$SRC/hooks" -type f 2>/dev/null | wc -l | tr -d ' ')
+  copied=$((copied + n))
+fi
 
 echo "captured Claude Code: $copied files (excluding sessions/cache/history)"

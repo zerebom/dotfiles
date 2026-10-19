@@ -1,0 +1,7 @@
+I committed the change and opened the pull request. It has no conflicts with main, and CI is running now. The description lists what changed, what I tested in the browser, and what I could not test, so the reviewer can see the gaps without reading the diff.
+
+- Lint and type check: passing
+- Unit tests: passing
+- Storybook interaction tests: still running
+
+I will check the bot review when it arrives and report back with anything that needs a decision from you.
