@@ -1,0 +1,1 @@
+I rewrote the page so it covers MCP連携 on its own, with no comparison to まとめ配信. The page is published as a private artifact, and I verified in the browser that it renders without console errors. The layout works at phone width and the dark theme is supported as well.

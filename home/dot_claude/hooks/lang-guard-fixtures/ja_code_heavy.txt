@@ -1,0 +1,3 @@
+原因は retry ヘルパーが元の例外を握りつぶしていたことでした。
+
+次の設計に直します。`fetchBrandSummary` は BigQuery の dm_voice_sage.brand_summary を引き、`useBrandSummary` hook 経由で BrandSummaryCard に渡します。cache は React cache() と unstable_cache の二段で、revalidateTag("brand-summary") を Server Action 側から呼びます。TypeScript の型は BrandSummaryRow から zod schema を派生させ、RowToViewModel で ViewModel に変換します。

@@ -1,0 +1,5 @@
+ユーザーからのコメントは次のとおりです。
+
+> The dashboard is too slow and I cannot find the export button anywhere on the page, which is really frustrating for our whole team.
+
+この指摘は、初期表示の遅さとエクスポート導線の見つけにくさの二点に分けられます。まず導線の位置を変えるのが先です。

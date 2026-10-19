@@ -1,0 +1,1 @@
+Prefect の flow が失敗した原因は、Cloud Run Jobs 側の timeout 設定が 600 秒のままで、Gemini API の rate limit に当たった retry が上限を超えたことです。staging の job definition は更新済みなので、production の Terraform plan を確認してから apply してください。

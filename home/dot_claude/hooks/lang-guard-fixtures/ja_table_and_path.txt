@@ -1,0 +1,8 @@
+調査結果をまとめます。対象は次のファイルです。
+
+| ファイル | 内容 |
+|---|---|
+| packages/app/src/lib/auth.ts | 認証設定 |
+| packages/shared/src/db/schema.ts | スキーマ定義 |
+
+認証まわりは /api/auth/callback/commune の redirect_uri が原因でした。https://example.com/docs/oidc を参照して、環境ごとに許可リストを揃えてください。

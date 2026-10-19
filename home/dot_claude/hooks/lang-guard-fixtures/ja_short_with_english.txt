@@ -1,0 +1,1 @@
+了解です。README と CHANGELOG を更新して、npm publish は行わずに止めます。

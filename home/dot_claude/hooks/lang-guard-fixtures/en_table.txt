@@ -1,0 +1,9 @@
+Here is where things stand across the three workstreams. The first two are finished, and the third is waiting on a review from the owner of the data pipeline before it can be merged.
+
+| Stream | Status |
+|---|---|
+| Schema | done |
+| API | done |
+| Backfill | waiting |
+
+Nothing else is blocked, so I will keep going on the remaining cleanup in the meantime.
