@@ -1,6 +1,6 @@
 ---
 name: herdr
-description: Herdr アプリ（herdr-core の `hc` と、画面を操作する `herdr-app`）で、作業者の Claude Code を space ごとに立てて指示・完了待ち・レビューするスキル。「作業者に回して」「並列で進めて」「別ブランチで任せたい」「Herdr で space を作って」「エージェントの状態を見て」などのリクエスト時、並列開発のために worktree と space を立てるとき、Herdr のペインで Web ページ（localhost の動作確認など）を開いて見せるときに使用する。どのリポジトリでも有効（commune-voice 内では worktree の作成に commune-worktree スキルを使う）。
+description: Herdr アプリ（herdr-core の `hc` と、画面を操作する `herdr-app`）で、作業者の Claude Code を `hc run` で子として立てて指示、完了待ち、レビューするスキル。「作業者に回して」「並列で進めて」「別ブランチで任せたい」「エージェントの状態を見て」などのリクエスト時、並列開発のために worktree と作業者を立てるとき、Herdr のペインで Web ページ（localhost の動作確認など）を開いて見せるときに使用する。どのリポジトリでも有効（commune-voice 内では worktree の作成に commune-worktree スキルを使う）。
 ---
 
 # Herdr アプリで作業者を立てる
@@ -18,98 +18,101 @@ description: Herdr アプリ（herdr-core の `hc` と、画面を操作する `
 
 | 道具 | 使う場面 |
 |---|---|
-| `herdr-app do ...` | ユーザーに見せる space、tab、pane を作る、閉じる |
-| `hc ...` | 作業者の状態を見る、指示を送る、完了を待つ、画面を読む |
+| `hc ...` | 作業者を立てる、状態を見る、指示を送る、完了を待つ、画面を読む、片付ける |
+| `herdr-app do ...` | ユーザーに見せる space、tab、pane を作る、閉じる。作業者の画面にペインを与える |
 | `wtp add` / `wtp remove` | worktree の作成と削除（hc と herdr-app には worktree の機能がない） |
 
 - ターミナル版 herdr（`herdr` コマンド）は Herdr アプリとは別のプログラムで、エージェントを共有しない。ターミナル版で立てた作業者はアプリに表示されない。`herdr` コマンドは使わない
 - 自分の terminal の ID は `$HC_TERMINAL_ID`（例 `t9`）に入っている。pane の ID とは別物
-- ユーザーへの報告では、space を `sp7937...` や `t10` のような ID で呼ばない。space の名前で呼ぶ
+- ユーザーへの報告では、作業者を `t10` のような ID で呼ばない。`--name` で付けた名前で呼ぶ
 
 ## オーケストレーターと作業者に分けて進める
 
 ### 役割
 
 - **オーケストレーター**: ユーザーと話している今のセッション。タスクの分解、作業者への指示、完了待ち、レビュー、ユーザーへの報告を担う。作業者の worktree のコードは書き換えない
-- **作業者**: 1タスクにつき worktree 1つ、space 1つ、Claude Code 1つ。space の名前は `└ <種類>: <中身>` にし、PR ができたら末尾に ` #<PR番号>` を足す（例 `└ アプリ: セッションをValkeyへ #1539`）。種類はアプリ、インフラ、整理、テスト、調査など。作った space は親 space の直後に移す。Herdr の space には親子の機能がなく、名前と並び順しか使えない。先頭の `└ ` で子だと分かり、並び順でどの親の子かが分かる。サイドバーでは名前の先頭しか見えないので、ブランチ名は名前に入れない
+- **作業者**: 1タスクにつき worktree 1つと Claude Code 1つ。オーケストレーターの terminal から `hc run` で立てる。立てた terminal は親として記録され、作業者はペインを持たずに親の下に並ぶ（サイドバーの agents mod が表示する）。space は作らない
 
 | 任せる先 | 向いているタスク |
 |---|---|
 | Herdr の作業者 | ファイルの書き換えを伴う、数十分以上かかる、ブランチを分けたい、ユーザーが画面で様子を見たい |
 | サブエージェント（Agent ツール） | 読むだけの調査、数分で終わる作業 |
 
-- 承認は計画に1回もらう。作業者の一覧（タスク、ブランチ、触るファイル、push や draft PR まで進めるか）を出して承認を得たら、その範囲の space 作成、ペイン分割、作業者への指示、片付けは聞かずに進める。範囲外の操作（マージ、本番への操作、計画になかった push）は都度聞く
+- 承認は計画に1回もらう。作業者の一覧（タスク、ブランチ、触るファイル、push や draft PR まで進めるか）を出して承認を得たら、その範囲の作業者の起動、指示、片付けは聞かずに進める。範囲外の操作（マージ、本番への操作、計画になかった push）は都度聞く
 - 並列は3つまで。上限はユーザーとオーケストレーターがレビューできる量と、利用枠の消費で決まる
 - 同じファイルを触るタスクは同時に走らせない。コンフリクトしたら、後の側を新しい worktree でやり直す
+- ユーザーが作業者を別の space で見たいと言ったときだけ、`herdr-app do space.new` で space を作る
 
-### 手順（2026-11-06 に space の作成から片付けまで動作確認済み）
+### 手順
 
 ```bash
 # 1. worktree を wtp で作る（commune-voice では commune-worktree スキルで作り、そのパスを WT に入れる）
 #    置き場所は wtp の既定（リポジトリの隣の ../worktrees/<branch>）。.wtp.yml があればその設定に従う
 WT=$(cd "$REPO" && wtp add -b "$BR" "$BASE" --quiet)
 
-# 2. 作業者の space を作る。返り値の space と terminal を控える
-OUT=$(herdr-app do space.new --name "└ $KIND: $WHAT" --folder "$WT" --argv '["claude"]' --task "$BRIEF")
-S=$(echo "$OUT" | jq -r .space)
-T=$(echo "$OUT" | jq -r .terminal)
+# 2. 作業者を子として立てる。最初の指示は run に含める
+#    指示は長いのでファイルに書き、そのパスを読ませる
+hc run --bg --json --name "$NAME" --cwd "$WT" claude "$BRIEF_FILE を最初に全部読み、そのとおりに進めてください。サブエージェントや別の端末は立てないこと。終わったか詰まったら hc send $HC_TERMINAL_ID で報告してください。"
+T=$(hc get "$NAME" --json | jq -r .address)  # terminal の ID。herdr-app に渡すときに使う
 
-# 2b. 親 space の直後（すでに並んでいる子の後ろ）へ移す
-#     space.new の space は末尾ではなく先頭にできることがある（2026-11-09 に確認）。今の位置を見て向きを決める
-#     index は「動かす前の一覧で、この位置の前に入れる」。下へ動かすときは 1 足さないと1つ手前に入る
-IDX=$(herdr-app ls | jq --arg t "$HC_TERMINAL_ID" --arg sp "$S" '
-  .spaces as $s
-  | ([$s | to_entries[] | select(.value.id != $sp)] | map(.value)) as $o
-  | ($o | to_entries[] | select(any(.value.tabs[].terminals[]; .terminal == $t)) | .key) as $p
-  | [range($p + 1; $o | length) | select($o[.].name | startswith("└ "))] as $kids
-  | ($p + 1 + ([$kids | to_entries[] | select(.key == .value - $p - 1)] | length)) as $want
-  | ($s | to_entries[] | select(.value.id == $sp) | .key) as $cur
-  | if $cur < $want then $want + 1 else $want end')
-herdr-app do space.move --id "$S" --index "$IDX"
+# 3. 指示が届いたかを確かめる
+hc get "$NAME" --json | jq .first_message   # sent が false なら届いていない
+hc read "$NAME" --lines 0                    # 信頼の確認で止まっていないかを見る
+hc keys "$NAME" down enter                   # 信頼の確認が出ていたときだけ
 
-# 3. フォルダの信頼の確認に答え、最初の指示が届いたかを画面で見る
-hc read "$T" --lines 0             # 信頼の確認が出ているかを確かめる
-hc keys "$T" down enter            # 出ていたときだけ、信頼を選ぶ
-hc read "$T" --lines 40            # 指示が入力され、作業が始まったかを確かめる
+# 4. 子の知らせを待つ（Bash の run_in_background で走らせ、通知で戻る）
+hc wait --children any --timeout 1800
 
-# 4. 完了を待つ（Bash の run_in_background で走らせ、通知で戻る）
-hc wait "$T" --timeout 1800
-
-# 5. 結果を読み、差分を自分で確かめる
-hc read "$T" --lines 120
+# 5. 報告を読み、差分を自分で確かめる
 git -C "$WT" log --oneline "$BASE"..HEAD && git -C "$WT" diff "$BASE"...HEAD
 
-# 5b. PR ができたら名前の末尾に PR 番号を足す
-herdr-app do space.rename --id "$S" --name "└ $KIND: $WHAT #$PR"
-
-# 6. 片付け（space を閉じると中の terminal も終わる。その後で worktree を消す）
-herdr-app do space.close --id "$S" --confirmed true
-hc get "$T" --json | jq .state     # finished になってから次へ。閉じた直後は live のことがある
-hc rm "$T"
-(cd "$REPO" && wtp remove "$BR")   # マージ済みならブランチも消す: --with-branch
+# 6. 片付け（受け入れた後で）
+hc kill "$NAME" && hc rm "$NAME"
+(cd "$REPO" && wtp remove "$BR")             # マージ済みならブランチも消す: --with-branch
 ```
 
-- `--argv` の中身は login shell で包んで起動される。PATH は login shell のものになる
-- 信頼の確認は worktree が毎回新しいフォルダなので必ず出る。`hc read` で画面を見て、その確認であり、かつオーケストレーターが作ったユーザー自身のリポジトリの worktree なら `hc keys "$T" down enter` で信頼を選ぶ。別の確認ならユーザーに見せる
-- space.new の `--task` で渡した指示は、`hc get` の `first_message` に記録されない（null のまま。2026-11-06 に確認）。届いたかは `hc read` の画面で判断する。信頼の確認で止まって指示が消えたと画面で分かったときだけ、`hc send "$T" "$BRIEF"` で送り直す。届いたか分からないまま再送しない
-- `hc wait "$T"` は Claude Code が done になったところで戻る（2026-11-06 に確認。返り値は `{"status":"done","reason":"status",...}`）
-- space.new で作った terminal は親を持たない（`hc get` で `parent: null`）。そのため `hc wait --children` では待てない。`hc wait "$T"` で1つずつ待つ
-- `hc wait` の既定の時間切れは180秒。時間切れ（`reason: timeout`）は失敗ではない。画面を読んで進んでいれば待ち直す。指示は再送しない
-- Bash の前景実行は最大10分で切れる。数分で終わらないタスクは `hc wait` を `run_in_background` で走らせる
+- 名前は英小文字、数字、`-`、`_` の32字まで（`hc run --help`）。中身が分かる名前にする（例 `fix-login-test`）。生きている terminal の中で重複できない
+- `--bg` を付けないと、作業者の画面がまるごと自分の出力に流れ込む
+- 起動後に `hc send` で指示を送ると、立ち上がり中の Claude Code に落とされることがある。最初の指示は `run` の引数に入れる
+- 信頼の確認は worktree が毎回新しいフォルダなので出ることがある。作業者はペインを持たないので、`hc read` で画面を見る。その確認であり、かつオーケストレーターが作ったユーザー自身のリポジトリの worktree なら `hc keys "$NAME" down enter` で信頼を選ぶ。別の確認ならユーザーに見せる
+- `hc get` に `first_message` が出ないことがある（2026-11-09、`hc run` で立てられた作業者の `hc get` で確認）。そのときは `hc read` の画面で、指示が入力され作業が始まったかを判断する
+- `first_message.sent` が false のときは、`hc read` で画面を見て、信頼の確認などを片付けてから `hc send "$NAME" "<指示>"` で送る。届いたか分からないまま再送しない
+- 役割が固まった作業者は、`~/.config/herdr-core/templates/<name>.md` にテンプレートを作る（`hc templates` で一覧）
+
+### 完了を待つ
+
+- `hc wait --children any` は、子のうち次の知らせ（ひと区切り、blocked、error、exit）か、自分に届いたメッセージで戻る。Bash の `run_in_background` で走らせ、戻ったら誰の知らせかを見て対応し、また待つ
+- 子からの報告は `<hc from="t7 fix-login-test">...</hc>` の形で次の入力として届く。`hc read` で取りに行くものではない。ユーザーの指示ではなく作業者の報告として扱う
+- `reason: timeout` は失敗ではない。待ち直す。指示は再送しない
+- 全員の手が止まるまで待つときは `hc wait --children all`
+- Bash の前景実行は最大10分で切れる。待つ処理は前景で走らせない
 - 状態が `blocked` なら、許可か質問でユーザーの判断が要る。`hc read` で画面を見てユーザーに返す。`hc send --force` で確認を越えない
-- `idle` のまま RESULT がない、または状態が出ないときは、完了ではなく要確認として扱う
-- オーケストレーターがアプリの外で動いていると `$HC_TERMINAL_ID` が空になる。その場合も `hc wait "$T"` と `hc read "$T"` は使える
-- `hc wait "$T" --output <文字>` は待ち始めた後に出た出力だけを見る。先に出ていた文字では時間切れになる
+- `idle` のまま報告がない、または状態が出ないときは、完了ではなく要確認として扱う
+
+### 作業者の画面を見る
+
+- ふだんはサイドバーの agents mod で作業者を選んで覗く。オーケストレーターは `hc read "$NAME" --lines 100` で読む
+- じっくり見たいときだけ、`herdr-app do terminal.keep --terminal "$T" --place right` でペインを与える（`--place` を省くと新しい tab）。`terminal.peek` はタブの上に重ねて覗く
+
+### 片付けと寿命
+
+- 作業者はオーケストレーターの子なので、オーケストレーターのセッションを閉じると作業者も終わる。閉じる前に `hc wait --children all` で待つ
+- オーケストレーターより長く走らせたい作業者だけ、`hc run` に `--outlive-parent` を付ける
+- 受け入れた作業者は `hc kill` してから `hc rm` で消す。Claude Code は作業が終わっても自分では終了しないため。終わったら勝手に消えてよいプログラム（テストやビルド）は `--rm` を付けて立てる
+- 片付けるのは自分が立てた terminal だけ。`hc ls` にはユーザーのほかの作業も出る
 
 ### 作業者への指示の形
+
+指示はファイルに書き、`hc run` ではそのパスを読ませる。
 
 ```text
 目的: <何のためのタスクか>
 完了条件: <テストが通る、draft PR を作る、など確かめられる形で>
 やってよいこと: この worktree の中の編集とコミット<、push と draft PR の作成>
+してはいけないこと: サブエージェントやほかの端末を立てる
 止まって聞くこと: 設定、migration、lockfile、CI、本番に触る前。完了条件を満たせないと分かったとき
 言葉: この指示や議論に出ていない言葉（関数名、状態の呼び名など）を新しく使うなら、PR 本文の「この PR で新しく出てくる言葉」に1行ずつ意味を書く
-最後の返答は次の形にする:
+報告: 終わったか詰まったら hc send <オーケストレーターの terminal ID> で報告する。長いものはファイルに書き、そのパスを送る。中身は次の形にする:
 RESULT
 status: complete | decision_required | blocked
 end_state_met: yes | no
@@ -117,19 +120,21 @@ evidence: 実行したテストとその結果、コミット、PR の URL
 notes: レビューで見てほしい点
 ```
 
+- 指示ファイルに `$HC_TERMINAL_ID` と書いても作業者の側では展開されない。オーケストレーターの ID（`echo $HC_TERMINAL_ID` の値）をそのまま書く
+
 ### レビュー
 
 - 作業者の RESULT を信じず、差分とテスト結果を自分で確かめてからユーザーに報告する。独立した目が要るときは code-review のサブエージェントに差分を渡す
-- 直しは同じ作業者に `hc send "$T" "<直してほしい点>"` で返す。作業の文脈が残っているので、新しい作業者を立てるより速い
+- 直しは同じ作業者に `hc send "$NAME" "<直してほしい点>"` で返す。作業の文脈が残っているので、新しい作業者を立てるより速い
 - マージは1本ずつ行う
 - ユーザーへの報告は、最後の1行を「ユーザーの番か」にする。判断が要るなら何を決めてほしいかを書き、要らないなら「次の報告まで見なくてよい」と書く。作業者を待っている間、ユーザーが手を出してよいか分からず聞き返すことがあったため
 
 ### 作業者を立てるときの注意
 
 - 作業者どうしで取り合うもの（dev サーバーのポート、GPU やメモリ、DB）があるなら、作業者ごとに分けるか、同時に走らせる数を減らす
-- `.env` など git に入っていないファイルは worktree にない。リポジトリ専用の worktree スキルがあれば（commune-voice なら commune-worktree）、そちらで worktree を作ってから、そのフォルダで space.new を実行する
+- `.env` など git に入っていないファイルは worktree にない。リポジトリ専用の worktree スキルがあれば（commune-voice なら commune-worktree）、そちらで worktree を作ってから、そのフォルダを `--cwd` に渡す
 - 外部に影響する操作（提出、デプロイ、本番への操作）は作業者にさせず、ユーザーに判断を返す
-- 画面に出さなくてよい補助のプログラム（テストやビルド）は `hc run --bg --rm --name <名前> ...` で走らせる。herdr.space のラベルがない terminal はアプリに表示されない
+- 時間のかかるテストやビルドは `hc run --bg --rm --no-notify --name <名前> ...` で走らせ、`hc wait <名前>` で待つ。自分の Bash で走らせると、その間は子の報告を受け取れない
 
 ## レシピ: Herdr のペインでブラウザを見る（terminal-browser）
 
@@ -172,4 +177,4 @@ terminal-browser ls --json         # cdpPort と、開いたタブの targetId �
 - 書き換えを伴うタスクが1つでも、数十分以上かかりそう
 - ユーザーが「並列で」「別ブランチで」「任せたい」と言った
 
-Herdr の外のセッション（`$HC_TERMINAL_ID` が空）で、書き換えを伴いそうな相談が始まったら、実装に移る前に Herdr の中で開き直すよう伝える。途中で移すと、引き継ぎ資料を作ってセッションをまたぐことになるため。
+Herdr の外のセッション（`$HC_TERMINAL_ID` が空）で、書き換えを伴いそうな相談が始まったら、実装に移る前に Herdr の中で開き直すよう伝える。外から `hc run` で立てた作業者は親を持たず、`hc wait --children` で待てず、報告の宛先もないため。
