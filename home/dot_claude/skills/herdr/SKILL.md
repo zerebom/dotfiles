@@ -74,7 +74,7 @@ hc kill "$NAME" && hc rm "$NAME"
 - 名前は英小文字、数字、`-`、`_` の32字まで（`hc run --help`）。中身が分かる名前にする（例 `fix-login-test`）。生きている terminal の中で重複できない
 - `--bg` を付けないと、作業者の画面がまるごと自分の出力に流れ込む
 - 起動後に `hc send` で指示を送ると、立ち上がり中の Claude Code に落とされることがある。最初の指示は `run` の引数に入れる
-- 信頼の確認は worktree が毎回新しいフォルダなので出ることがある。作業者はペインを持たないので、`hc read` で画面を見る。その確認であり、かつオーケストレーターが作ったユーザー自身のリポジトリの worktree なら `hc keys "$NAME" down enter` で信頼を選ぶ。別の確認ならユーザーに見せる
+- 信頼の確認は worktree が毎回新しいフォルダなので出ることがある（2026-11-09 に dotfiles の worktree で `hc run` したときは出なかった）。作業者はペインを持たないので、`hc read` で画面を見る。その確認であり、かつオーケストレーターが作ったユーザー自身のリポジトリの worktree なら `hc keys "$NAME" down enter` で信頼を選ぶ。別の確認ならユーザーに見せる
 - `hc get` に `first_message` が出ないことがある（2026-11-09、`hc run` で立てられた作業者の `hc get` で確認）。そのときは `hc read` の画面で、指示が入力され作業が始まったかを判断する
 - `first_message.sent` が false のときは、`hc read` で画面を見て、信頼の確認などを片付けてから `hc send "$NAME" "<指示>"` で送る。届いたか分からないまま再送しない
 - 役割が固まった作業者は、`~/.config/herdr-core/templates/<name>.md` にテンプレートを作る（`hc templates` で一覧）
